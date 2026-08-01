@@ -1,0 +1,172 @@
+.acm-scan-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.acm-scan-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--slate-900);
+}
+
+.acm-scan-title i {
+  color: #d97706;
+  margin-right: 5px;
+}
+
+.acm-scan-sub {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.acm-scan-btn {
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text2);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: transform .15s ease, background .15s ease;
+  white-space: nowrap;
+}
+
+.acm-scan-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--green-bg);
+}
+
+.acm-scan-btn.dark {
+  background: var(--slate-900);
+  color: #fff;
+  border-color: var(--slate-900);
+}
+
+.acm-scan-btn.dark:hover:not(:disabled) {
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.acm-scan-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.acm-scanning-note {
+  background: rgba(3,105,161,.08);
+  border: 1px solid rgba(3,105,161,.2);
+  color: var(--sky);
+  border-radius: 9px;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.acm-scanned-note {
+  background: var(--green-bg);
+  border: 1px solid rgba(45,122,71,.2);
+  color: var(--green);
+  border-radius: 9px;
+  padding: 9px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.acm-phone-row {
+  display: flex;
+  gap: 8px;
+}
+
+.acm-phone-row select {
+  width: 76px;
+  flex-shrink: 0;
+  padding: 9px 6px;
+  border-radius: 9px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  font-size: 12.5px;
+  color: var(--slate-900);
+}
+
+.acm-phone-row input {
+  flex: 1;
+}
+
+.acm-add-opt-btn {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+
+.acm-add-opt-btn:hover {
+  background: var(--green);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.acm-attach-box {
+  border: 2px dashed var(--border2);
+  border-radius: 12px;
+  padding: 28px 16px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--muted);
+  background: var(--surface2);
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.acm-attach-box:hover {
+  border-color: var(--green);
+  background: var(--green-bg);
+}
+
+.acm-attach-box i {
+  display: block;
+  font-size: 22px;
+  margin-bottom: 8px;
+  opacity: .6;
+}
+
+.acm-attach-box span {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+@media (max-width: 500px) {
+  .acm-scan-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .acm-scan-box > div:last-child {
+    width: 100%;
+  }
+  .acm-scan-btn {
+    flex: 1;
+    justify-content: center;
+  }
+}

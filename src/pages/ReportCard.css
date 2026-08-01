@@ -1,0 +1,541 @@
+.rc-wrap {
+  max-width: 1300px;
+}
+
+.rc-loading {
+  text-align: center;
+  padding: 60px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.rc-subtitle {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+/* ── Filters ────────────────────────────────────────────── */
+.rc-filters-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.rc-filter-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.rc-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 200px;
+}
+
+.rc-filter-group label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+.rc-filter-group select {
+  padding: 9px 12px;
+  border-radius: 9px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--slate-900);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rc-filter-group select:disabled {
+  opacity: .65;
+  cursor: not-allowed;
+  background: var(--bg2);
+}
+
+.rc-export-btn {
+  padding: 10px 18px;
+  border-radius: 9px;
+  border: none;
+  background: #059669;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 2px 8px rgba(5,150,105,.3);
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  margin-left: auto;
+}
+
+.rc-export-btn:hover:not(:disabled) {
+  background: #047857;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(5,150,105,.4);
+}
+
+.rc-export-btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* the shared date-filter-bar div shouldn't add its own bottom margin here */
+.rc-filters-card .dash-filter-bar {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  border-top: 1px dashed var(--border);
+  padding-top: 14px;
+}
+
+/* ── User header ────────────────────────────────────────── */
+.rc-user-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  animation: rc-fade-in .4s ease;
+}
+
+@keyframes rc-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rc-user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), var(--green-xl));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(45,122,71,.3);
+}
+
+.rc-user-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--slate-900);
+}
+
+.rc-user-role {
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: capitalize;
+  margin-top: 2px;
+}
+
+.rc-reviewer-tag {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--amber);
+  background: var(--amber-bg);
+  border: 1px solid rgba(180,83,9,.25);
+  border-radius: 20px;
+  padding: 6px 14px;
+  max-width: 320px;
+  line-height: 1.4;
+}
+
+/* ── Totals grid ────────────────────────────────────────── */
+.rc-totals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.rc-total-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  animation: rc-fade-in .4s ease backwards;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.rc-total-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+.rc-total-val {
+  font-size: 26px;
+  font-weight: 800;
+  font-family: var(--mono);
+  line-height: 1;
+}
+
+.rc-total-lbl {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-top: 7px;
+}
+
+/* ── Cards / tables ─────────────────────────────────────── */
+.rc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.rc-card-header {
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.rc-card-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+.rc-count-sm {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.rc-table-wrap {
+  overflow-x: auto;
+}
+
+table.rc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 700px;
+}
+
+table.rc-table thead th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: .7px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+table.rc-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .15s ease;
+}
+
+table.rc-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+table.rc-table tbody tr:hover {
+  background: var(--surface2);
+}
+
+table.rc-table tbody td {
+  padding: 11px 14px;
+  vertical-align: middle;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+.rc-module-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.rc-status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(107,140,111,.1);
+  color: var(--text2);
+}
+
+.rc-num {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.rc-green { color: #059669; }
+.rc-rose { color: var(--rose); }
+.rc-amber { color: var(--amber); }
+
+.rc-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rc-progress-bar {
+  width: 60px;
+  height: 6px;
+  background: var(--bg2);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.rc-progress-fill {
+  height: 100%;
+  border-radius: 20px;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+
+.rc-empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
+  cursor: default;
+}
+
+@media (max-width: 640px) {
+  .rc-filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .rc-export-btn {
+    margin-left: 0;
+    justify-content: center;
+  }
+}
+
+/* ── Follow-up Timeliness card ──────────────────────────── */
+.rc-followup-body {
+  padding: 18px;
+}
+
+.rc-followup-summary {
+  margin-bottom: 18px;
+}
+
+.rc-followup-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rc-followup-bar {
+  flex: 1;
+  height: 10px;
+  background: var(--bg2);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.rc-followup-bar-fill {
+  height: 100%;
+  border-radius: 20px;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+
+.rc-followup-pct {
+  font-size: 14px;
+  font-weight: 800;
+  color: #059669;
+  white-space: nowrap;
+}
+
+.rc-followup-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+.rc-followup-note {
+  font-size: 11.5px;
+  color: var(--muted2);
+  margin-top: 10px;
+  line-height: 1.5;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.rc-followup-recent-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.rc-followup-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rc-followup-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 13px;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.rc-followup-row:hover {
+  transform: translateX(3px);
+  box-shadow: var(--shadow-sm);
+}
+
+.rc-followup-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rc-followup-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rc-followup-id {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.rc-followup-company {
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--slate-900);
+  margin-left: 6px;
+}
+
+.rc-followup-dates {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.rc-followup-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 11px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.rc-followup-badge.green { background: var(--green-bg); color: #059669; }
+.rc-followup-badge.rose { background: var(--rose-bg); color: var(--rose); }
+
+/* ── Clickable module counts ────────────────────────────── */
+.rc-clickable {
+  cursor: pointer;
+  transition: transform .12s ease;
+}
+
+.rc-clickable:hover {
+  text-decoration: underline;
+  transform: scale(1.08);
+}
+
+/* ── Detail popup modal ─────────────────────────────────── */
+.rc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,46,29,.5);
+  backdrop-filter: blur(3px);
+  z-index: 350;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.rc-modal {
+  background: var(--surface);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 70px rgba(26,46,29,.3);
+  overflow: hidden;
+}
+
+.rc-modal-header {
+  padding: 14px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--slate-900);
+  flex-shrink: 0;
+}
+
+.rc-modal-header button {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s ease, color .15s ease;
+}
+
+.rc-modal-header button:hover {
+  background: var(--rose-bg);
+  color: var(--rose);
+}
+
+.rc-modal-body {
+  overflow-y: auto;
+}

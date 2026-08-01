@@ -1,0 +1,431 @@
+.scp-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.scp-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a1f17;
+}
+
+.scp-subtitle {
+  color: #8a9480;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.scp-add-btn {
+  padding: 11px 20px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #4a5c40, #3a4a30);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 18px rgba(74,92,64,.28);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.scp-add-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(74,92,64,.36);
+}
+
+.scp-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.scp-search {
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+}
+
+.scp-search i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8a9480;
+  font-size: 12.5px;
+}
+
+.scp-search input {
+  width: 100%;
+  padding: 10px 14px 10px 36px;
+  border-radius: 9px;
+  border: 1px solid rgba(74,92,64,.15);
+  background: #fff;
+  font-size: 13px;
+  color: #1a1f17;
+  outline: none;
+}
+
+.scp-search input:focus {
+  border-color: #4a5c40;
+  box-shadow: 0 0 0 3px rgba(74,92,64,.1);
+}
+
+.scp-filters select {
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: 1px solid rgba(74,92,64,.15);
+  background: #fff;
+  font-size: 13px;
+  color: #1a1f17;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.scp-card {
+  background: #fff;
+  border: 1px solid rgba(74,92,64,.12);
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(74,92,64,.08);
+  overflow: hidden;
+}
+
+.scp-table-wrap {
+  overflow-x: auto;
+}
+
+table.scp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 1700px;
+}
+
+table.scp-table thead th {
+  background: #f7f8f5;
+  padding: 11px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: #8a9480;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(74,92,64,.12);
+  white-space: nowrap;
+}
+
+table.scp-table tbody tr {
+  border-bottom: 1px solid rgba(74,92,64,.08);
+  cursor: pointer;
+  transition: background .15s ease;
+}
+
+table.scp-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+table.scp-table tbody tr:hover {
+  background: #f7f8f5;
+}
+
+table.scp-table tbody td {
+  padding: 12px 14px;
+  color: #3d4a34;
+  white-space: nowrap;
+}
+
+.scp-mono {
+  font-family: 'DM Mono', monospace;
+  font-size: 11.5px;
+  color: #6a7568;
+}
+
+.scp-id {
+  color: #4a5c40;
+  font-weight: 700;
+}
+
+.scp-badge {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.scp-priority {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+.scp-priority-high { background: rgba(190,18,60,.1); color: #be123c; }
+.scp-priority-medium { background: rgba(180,83,9,.1); color: #b45309; }
+.scp-priority-low { background: rgba(107,140,111,.1); color: #6a8c6f; }
+
+.scp-unassigned {
+  color: #b45309;
+  font-style: italic;
+  font-size: 11.5px;
+}
+
+.scp-view-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid rgba(74,92,64,.15);
+  background: #fff;
+  color: #4a5c40;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s ease, transform .15s ease;
+}
+
+.scp-view-btn:hover {
+  background: #4a5c40;
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.scp-empty {
+  text-align: center;
+  padding: 40px;
+  color: #8a9480;
+  cursor: default;
+}
+
+.scp-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-top: 1px solid rgba(74,92,64,.1);
+  font-size: 12.5px;
+  color: #8a9480;
+}
+
+.scp-pagination button {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(74,92,64,.15);
+  background: #fff;
+  color: #3d4a34;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+
+.scp-pagination button:hover:not(:disabled) {
+  background: #f0f2ec;
+}
+
+.scp-pagination button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .scp-header {
+    flex-direction: column;
+  }
+  .scp-add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── Mobile: table becomes a stack of cards ── */
+@media (max-width: 768px) {
+  .scp-table-wrap {
+    overflow-x: visible !important;
+  }
+
+  table.scp-table {
+    min-width: unset;
+  }
+
+  .scp-table thead {
+    display: none !important;
+  }
+
+  .scp-table tbody,
+  .scp-table tr,
+  .scp-table td {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .scp-table tbody tr {
+    background: #fff;
+    border: 1px solid rgba(74, 92, 64, .15);
+    border-radius: 14px;
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    box-shadow: 0 2px 12px rgba(74, 92, 64, .08);
+  }
+
+  .scp-table tbody tr:hover {
+    background: #fff;
+  }
+
+  .scp-table tbody td {
+    padding: 9px 0 !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(74, 92, 64, .08) !important;
+    text-align: left !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .scp-table tbody td:last-child {
+    border-bottom: none !important;
+    padding-top: 12px !important;
+  }
+
+  .scp-table tbody td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    color: #8a9480;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    margin-bottom: 4px;
+  }
+
+  .scp-table tbody td[data-label='Actions'] {
+    text-align: center !important;
+  }
+
+  .scp-table tbody td[data-label='Actions']::before {
+    display: none;
+  }
+
+  .scp-actions {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .scp-truncate {
+    max-width: unset;
+    white-space: normal !important;
+  }
+
+  .scp-mono {
+    word-break: break-all;
+  }
+}
+
+
+/* ── Additional styles for redesigned Contacts page ─────── */
+.scp-header-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.scp-btn-secondary {
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: 1px solid rgba(74,92,64,.18);
+  background: #fff;
+  color: #1a1f17;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: background .15s ease, transform .15s ease;
+  white-space: nowrap;
+}
+
+.scp-btn-secondary:hover {
+  background: #f0f2ec;
+  transform: translateY(-1px);
+}
+
+.scp-region-input {
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: 1px solid rgba(74,92,64,.15);
+  background: #fff;
+  font-size: 13px;
+  color: #1a1f17;
+  width: 130px;
+}
+
+.scp-reset-btn {
+  padding: 10px 16px;
+  border-radius: 9px;
+  border: 1px solid rgba(190,18,60,.3);
+  background: #fff;
+  color: #be123c;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s ease;
+}
+
+.scp-reset-btn:hover {
+  background: rgba(190,18,60,.08);
+}
+
+.scp-sub {
+  font-size: 10.5px;
+  color: #8a9480;
+  margin-top: 2px;
+}
+
+.scp-source-badge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: rgba(3,105,161,.1);
+  color: #0369a1;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+.scp-truncate {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scp-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.scp-actions button {
+  padding: 6px 11px;
+  border-radius: 7px;
+  border: none;
+  background: #1a1f17;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s ease, transform .15s ease;
+  white-space: nowrap;
+}
+
+.scp-actions button:hover {
+  background: #4a5c40;
+  transform: translateY(-1px);
+}

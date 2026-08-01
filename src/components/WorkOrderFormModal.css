@@ -1,0 +1,424 @@
+/* ── Overlay + Modal Shell ──────────────────────────────── */
+.wof-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26,46,29,.5);
+  backdrop-filter: blur(3px);
+  z-index: 320;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.wof-modal {
+  background: var(--surface);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 1080px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 70px rgba(26,46,29,.3);
+  overflow: hidden;
+}
+
+.wof-header {
+  padding: 14px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--slate-900);
+  flex-shrink: 0;
+}
+
+.wof-version-badge {
+  font-size: 11px;
+
+  font-weight: 700;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 20px;
+  color: var(--text2);
+}
+
+.wof-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 15px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.wof-close-btn:hover {
+  background: var(--surface);
+  color: var(--rose);
+}
+
+.wof-body {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+
+.wof-body::-webkit-scrollbar {
+  width: 7px;
+}
+
+.wof-body::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 20px;
+}
+
+.wof-footer {
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--surface2);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.wof-excel-btn {
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--sky);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.wof-excel-btn:hover {
+  background: #025c8a;
+}
+
+/* ── Section Titles ─────────────────────────────────────── */
+.wof-section-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+  margin: 22px 0 14px;
+}
+
+.wof-section-title:first-child {
+  margin-top: 0;
+}
+
+/* ── Generic Field ──────────────────────────────────────── */
+.wof-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.wof-field label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+.wof-input {
+  background: #fafbf8 !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-size: 13.5px !important;
+  font-family: var(--font);
+  color: var(--text);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.wof-input:read-only {
+  background: var(--surface2) !important;
+  color: var(--muted);
+}
+
+.wof-input:focus {
+  outline: none;
+  border-color: var(--green) !important;
+  box-shadow: 0 0 0 3px rgba(45,122,71,.1);
+}
+
+.wof-header-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 700px) {
+  .wof-header-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Dehumidifier Row Card ──────────────────────────────── */
+.wof-row-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.wof-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+
+.wof-row-header i {
+  margin-right: 6px;
+}
+
+.wof-remove-row-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 20px;
+  border: none;
+  background: var(--rose);
+  color: #fff;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.wof-remove-row-btn:hover {
+  background: #92122f;
+}
+
+/* ── Table (tumhare diye gaye exact classes) ───────────── */
+.wof-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #c0d4c3;
+  border-radius: 8px;
+  background: #f2f4f2;
+}
+
+.wof-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  min-width: 850px;
+}
+
+.wof-table td {
+  padding: 4px;
+  vertical-align: middle;
+  border: 1px solid #c0d4c3;
+}
+
+.wof-table thead td {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  text-align: center;
+  background: #e8efe9;
+  padding: 6px 4px;
+}
+
+.wof-cell-input {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #d4e0d6;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 12px;
+  color: #1a2e1d;
+  height: 28px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.wof-cell-input:focus {
+  border-color: var(--green);
+}
+
+.wof-cell-select {
+  width: 100%;
+  background: #f9fbf9;
+  border: 1px solid #d4e0d6;
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-size: 12px;
+  color: #1a2e1d;
+  height: 28px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.wof-label-left {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6a8c6f;
+  white-space: nowrap;
+  padding-left: 8px !important;
+}
+
+.wof-lbl-sup { font-size: 11px; font-weight: 700; color: #059669; white-space: nowrap; padding-left: 8px !important; }
+.wof-lbl-rea { font-size: 11px; font-weight: 700; color: #6d28d9; white-space: nowrap; padding-left: 8px !important; }
+.wof-lbl-req { font-size: 11px; font-weight: 700; color: #b45309; white-space: nowrap; padding-left: 8px !important; }
+.wof-lbl-orient { font-size: 11px; font-weight: 700; color: #0369a1; white-space: nowrap; padding-left: 8px !important; }
+
+.wof-qty-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.wof-qty-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.wof-qty-input {
+  width: 46px !important;
+  flex: none;
+}
+
+/* ── Add Row Button ─────────────────────────────────────── */
+.wof-add-row-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 9px;
+  border: 1.5px dashed var(--border2);
+  background: var(--surface);
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.wof-add-row-btn:hover {
+  background: var(--green-bg);
+  border-color: var(--green);
+}
+
+/* ── Drawings Need Checklist ────────────────────────────── */
+.wof-drawings-box {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.wof-drawing-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.wof-drawing-row:last-child {
+  border-bottom: none;
+}
+
+.wof-drawing-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 500;
+}
+
+.wof-drawing-hint {
+  font-size: 11px;
+  color: var(--muted2);
+  font-style: italic;
+}
+
+.wof-tick-btn, .wof-cross-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wof-tick-btn.active-tick {
+  background: #059669;
+  color: #fff;
+  border-color: #059669;
+}
+
+.wof-cross-btn.active-cross {
+  background: var(--rose);
+  color: #fff;
+  border-color: var(--rose);
+}
+
+/* ── Sizes Grid ──────────────────────────────────────────── */
+.wof-sizes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 700px) {
+  .wof-sizes-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .wof-sizes-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Revision Banner (shown when resubmitting a rejected WO) ── */
+.wof-revision-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--rose-bg);
+  border: 1px solid rgba(190,18,60,.25);
+  border-radius: 9px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+.wof-revision-banner i {
+  color: var(--rose);
+  margin-top: 2px;
+  flex-shrink: 0;
+}

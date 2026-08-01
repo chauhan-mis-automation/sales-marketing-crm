@@ -1,0 +1,231 @@
+.ne-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.ne-card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+.ne-card-body {
+  padding: 20px;
+}
+
+.ne-section-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  padding: 6px 0 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+  margin-top: 20px;
+}
+
+.ne-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.ne-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ne-field.full {
+  grid-column: 1 / -1;
+}
+
+.ne-field label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--slate-600);
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+
+.ne-field input,
+.ne-field select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13.5px;
+  padding: 10px 12px;
+  outline: none;
+  width: 100%;
+}
+
+.ne-field input:focus,
+.ne-field select:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(45,122,71,.1);
+  background: var(--surface);
+}
+
+.ne-phone-row {
+  display: flex;
+  gap: 10px;
+}
+
+.ne-phone-row select {
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.ne-helper {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.ne-products-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+.ne-product-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text2);
+  user-select: none;
+  transition: all .15s;
+}
+
+.ne-product-chip:hover {
+  border-color: var(--green-l);
+  color: var(--green);
+}
+
+.ne-product-chip.checked {
+  background: var(--green-bg);
+  border-color: rgba(45,122,71,.35);
+  color: var(--green);
+  font-weight: 600;
+}
+
+.ne-product-chip input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--green);
+}
+
+.ne-file-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: 1px dashed var(--border2);
+  background: var(--surface2);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--muted);
+  width: fit-content;
+}
+
+.ne-file-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.ne-file-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--sky-bg);
+  color: var(--sky);
+  border: 1px solid rgba(3,105,161,.2);
+  font-size: 12px;
+}
+
+.ne-file-tag button {
+  border: none;
+  background: none;
+  color: var(--sky);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.ne-footer {
+  display: flex;
+  gap: 9px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+}
+
+.btn-ghost, .btn-primary {
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-ghost {
+  background: var(--surface);
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+
+.btn-primary {
+  background: var(--green);
+  color: #fff;
+}
+
+.btn-primary:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+.ne-assign-note {
+  background: var(--sky-bg, rgba(3,105,161,.08));
+  color: var(--sky, #0369a1);
+  border: 1px solid rgba(3,105,161,.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 12.5px;
+  margin-top: 8px;
+  margin-bottom: 20px;
+}
+
+.ne-assign-note i {
+  margin-right: 6px;
+}

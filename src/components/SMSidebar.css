@@ -1,0 +1,344 @@
+.sm-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 250px;
+  background: #3d4a34;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform 0.3s ease, width 0.28s ease;
+}
+
+.sm-sidebar.collapsed {
+  width: 72px;
+}
+
+.sms-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+
+.sm-sidebar.collapsed .sms-brand {
+  padding: 18px 12px;
+  justify-content: center;
+}
+
+.sms-brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #fff;
+  padding: 3px;
+  object-fit: contain;
+  flex-shrink: 0;
+  transition: transform .3s ease;
+}
+
+.sm-sidebar.collapsed .sms-brand-logo:hover {
+  transform: scale(1.12) rotate(-4deg);
+}
+
+.sms-brand-text {
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity .2s ease, width .2s ease;
+  opacity: 1;
+}
+
+.sm-sidebar.collapsed .sms-brand-text {
+  opacity: 0;
+  width: 0;
+}
+
+.sms-brand-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.sms-brand-tag {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 1px;
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+.sms-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 14px 12px;
+}
+
+.sm-sidebar.collapsed .sms-nav {
+  padding: 14px 10px;
+}
+
+.sms-section {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 16px 8px 6px;
+  white-space: nowrap;
+  transition: opacity .15s ease;
+}
+
+.sms-section:first-child {
+  margin-top: 0;
+}
+
+.sm-sidebar.collapsed .sms-section {
+  opacity: 0;
+  height: 6px;
+  margin: 12px 0 4px;
+  overflow: hidden;
+}
+
+.sms-nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.82);
+  font-size: 13px;
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  text-align: left;
+  transition: background .18s ease, color .18s ease, transform .15s ease;
+  margin-bottom: 3px;
+  font-family: inherit;
+  animation: sms-item-in .3s ease backwards;
+}
+
+@keyframes sms-item-in {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.sm-sidebar.collapsed .sms-nav-item {
+  justify-content: center;
+  padding: 8px;
+}
+
+.sms-icon-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1), filter .18s ease;
+}
+
+.sms-nav-item:hover .sms-icon-badge {
+  transform: scale(1.12) rotate(-4deg);
+  filter: brightness(1.15);
+}
+
+.sms-nav-item.active .sms-icon-badge {
+  filter: brightness(1.25) saturate(1.3);
+  box-shadow: 0 0 0 2px rgba(255,255,255,.25);
+}
+
+.sms-nav-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity .18s ease;
+}
+
+.sm-sidebar.collapsed .sms-nav-label {
+  opacity: 0;
+  width: 0;
+  display: none;
+}
+
+.sms-nav-item:hover {
+  background: rgba(255,255,255,0.09);
+  color: #fff;
+  transform: translateX(2px);
+}
+
+.sm-sidebar.collapsed .sms-nav-item:hover {
+  transform: scale(1.05);
+}
+
+.sms-nav-item.active {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  font-weight: 700;
+}
+
+.sms-footer {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.sm-sidebar.collapsed .sms-footer {
+  padding: 14px 10px;
+  justify-content: center;
+}
+
+.sms-user-chip {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.sm-sidebar.collapsed .sms-user-chip {
+  flex: none;
+}
+
+.sms-user-av {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.sms-user-text {
+  min-width: 0;
+  overflow: hidden;
+  transition: opacity .15s ease;
+}
+
+.sm-sidebar.collapsed .sms-user-text {
+  display: none;
+}
+
+.sms-user-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sms-role-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.sms-signout-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+  transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+
+.sms-signout-btn:hover {
+  background: rgba(192,57,43,0.35);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.sms-overlay {
+  display: none;
+}
+
+/* ── Collapse toggle button ─────────────────────────────── */
+.sms-collapse-btn {
+  position: fixed;
+  top: 26px;
+  left: 250px;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(74,92,64,.2);
+  background: #fff;
+  color: #4a5c40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10.5px;
+  cursor: pointer;
+  z-index: 101;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  transition: left .28s ease, transform .2s ease, background .15s ease;
+}
+
+.sms-collapse-btn.collapsed {
+  left: 72px;
+}
+
+.sms-collapse-btn:hover {
+  background: #4a5c40;
+  color: #fff;
+  transform: translateX(-50%) scale(1.15);
+}
+
+@media (max-width: 900px) {
+  .sms-collapse-btn {
+    display: none;
+  }
+}
+
+/* ── Mobile responsive ──────────────────────────────────── */
+@media (max-width: 900px) {
+  .sm-sidebar {
+    transform: translateX(-100%);
+    width: 250px !important;
+  }
+
+  .sm-sidebar.open {
+    transform: translateX(0);
+    box-shadow: 0 10px 40px rgba(0,0,0,.3);
+  }
+
+  .sms-overlay.show {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,31,23,0.5);
+    z-index: 99;
+  }
+}

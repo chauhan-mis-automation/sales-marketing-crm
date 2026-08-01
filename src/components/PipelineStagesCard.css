@@ -1,0 +1,252 @@
+/* ── Pipeline scroll container ─────────────────────────── */
+.pipeline-scroll {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--green) var(--bg2);
+}
+
+.pipeline-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.pipeline-scroll::-webkit-scrollbar-track {
+  background: var(--bg2);
+  border-radius: 20px;
+}
+
+.pipeline-scroll::-webkit-scrollbar-thumb {
+  background: var(--green-l);
+  border-radius: 20px;
+}
+
+.pipeline-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--green);
+}
+
+.pipeline-nav-btns {
+  display: flex;
+  gap: 4px;
+}
+
+.pipeline-nav-btns button {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+
+.pipeline-nav-btns button:hover {
+  background: var(--green);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+/* ── Lane ───────────────────────────────────────────────── */
+.pipeline-lane {
+  flex: 0 0 240px;
+  animation: pipeline-lane-in .4s ease backwards;
+}
+
+@keyframes pipeline-lane-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pipeline-lane-header {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 9px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pipeline-lane-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--slate-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 155px;
+}
+
+.pipeline-lane-count {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--mono);
+  border-radius: 20px;
+  padding: 2px 9px;
+  flex-shrink: 0;
+}
+
+.pipeline-lane-accent {
+  height: 3px;
+}
+
+.pipeline-lane-total {
+  background: var(--green-bg);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 800;
+  font-family: var(--mono);
+  padding: 6px 13px;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  animation: pipeline-total-in .4s ease;
+}
+
+@keyframes pipeline-total-in {
+  from { opacity: 0; transform: scale(.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.pipeline-lane-body {
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--bg2);
+  padding: 8px;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.pipeline-empty {
+  text-align: center;
+  padding: 24px 10px;
+  color: var(--muted2);
+  font-size: 12px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+
+.pipeline-empty i {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 6px;
+  opacity: .5;
+}
+
+/* ── Mini enquiry cards inside a lane ──────────────────── */
+.pipeline-mini-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  animation: pipeline-card-in .35s ease backwards;
+}
+
+@keyframes pipeline-card-in {
+  from { opacity: 0; transform: translateY(8px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.pipeline-mini-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px rgba(26,46,29,.14);
+  border-color: var(--green);
+}
+
+.pipeline-mini-id {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.pipeline-mini-company {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--slate-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 3px;
+}
+
+.pipeline-mini-contact {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pipeline-mini-amount {
+  display: inline-flex;
+  align-items: center;
+  background: var(--green-bg);
+  color: var(--green);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-top: 8px;
+  transition: transform .18s ease;
+}
+
+.pipeline-mini-card:hover .pipeline-mini-amount {
+  transform: scale(1.06);
+}
+
+.pipeline-mini-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+
+.pipeline-mini-phone {
+  font-size: 10.5px;
+  color: var(--muted2);
+  font-family: var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pipeline-mini-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 800;
+  flex-shrink: 0;
+  transition: transform .18s ease;
+}
+
+.pipeline-mini-card:hover .pipeline-mini-avatar {
+  transform: scale(1.15);
+}
+
+.pipeline-mini-more {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 4px;
+}

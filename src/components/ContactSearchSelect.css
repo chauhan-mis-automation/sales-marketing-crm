@@ -1,0 +1,66 @@
+.css-wrap {
+  position: relative;
+}
+
+.css-input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--sm-border);
+  padding: 11px 14px;
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  background: var(--sm-bg-input);
+  color: var(--sm-text-primary);
+}
+
+.css-input:focus {
+  border-color: var(--sm-border-focus);
+}
+
+.css-input[readonly] {
+  background: var(--sm-bg-hover);
+  cursor: default;
+}
+
+.css-dropdown {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin-top: 4px;
+  max-height: 224px;
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid var(--sm-border);
+  background: var(--sm-bg-card);
+  box-shadow: var(--sm-shadow-lg);
+}
+
+.css-empty {
+  padding: 10px 14px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--sm-text-muted);
+}
+
+.css-option {
+  cursor: pointer;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--sm-text-primary);
+  transition: background 0.15s ease;
+}
+
+.css-option:hover {
+  background: var(--sm-bg-hover);
+}
+
+.css-option-name {
+  font-weight: 700;
+}
+
+.css-option-meta {
+  font-size: 11px;
+  color: var(--sm-text-muted);
+}

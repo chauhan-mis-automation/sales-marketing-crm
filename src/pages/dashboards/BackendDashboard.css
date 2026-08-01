@@ -1,0 +1,301 @@
+/* ── My Overall Summary ─────────────────────────────────── */
+.bd-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.bd-summary-item {
+  text-align: center;
+  padding: 20px;
+  border-right: 1px solid var(--border);
+}
+
+.bd-summary-item:last-child {
+  border-right: none;
+}
+
+.bd-summary-val {
+  font-size: 30px;
+  font-weight: 800;
+  font-family: var(--mono);
+  line-height: 1;
+}
+
+.bd-summary-lbl {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* ── Module cards (Flowchart / Quotation / GA Drawing / Questionnaire) ── */
+.bd-module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.bd-module-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--green);
+  border-radius: 14px;
+  padding: 16px;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.bd-module-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+.bd-module-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.bd-module-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--slate-900);
+}
+
+.bd-module-total {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 11px;
+  border-radius: 20px;
+}
+
+.bd-module-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.bd-module-num {
+  font-size: 22px;
+  font-weight: 800;
+  font-family: var(--mono);
+  line-height: 1;
+}
+
+.bd-module-lbl {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-top: 5px;
+  line-height: 1.3;
+}
+
+.bd-module-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.bd-module-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg2);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.bd-module-bar-fill {
+  height: 100%;
+  border-radius: 20px;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+
+.bd-module-pct {
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.bd-module-summary {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ── My TAT Performance ─────────────────────────────────── */
+.bd-tat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  padding: 16px;
+}
+
+.bd-tat-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.bd-tat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.bd-tat-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--slate-900);
+}
+
+.bd-tat-badges {
+  display: flex;
+  gap: 5px;
+}
+
+.bd-tat-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.bd-tat-badge.green { background: var(--green-bg); color: #059669; }
+.bd-tat-badge.rose { background: var(--rose-bg); color: var(--rose); }
+.bd-tat-badge.gray { background: rgba(107,140,111,.1); color: var(--muted); }
+
+.bd-tat-target {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.bd-tat-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bd-tat-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg2);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.bd-tat-bar-fill {
+  height: 100%;
+  border-radius: 20px;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+
+.bd-tat-pct {
+  font-size: 12px;
+  font-weight: 800;
+  font-family: var(--mono);
+}
+
+.bd-tat-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+  margin-bottom: 14px;
+}
+
+.bd-tat-recent-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.bd-tat-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bd-tat-empty {
+  font-size: 12px;
+  color: var(--muted2);
+  text-align: center;
+  padding: 12px;
+}
+
+.bd-tat-recent-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 9px 11px;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.bd-tat-recent-row:hover {
+  transform: translateX(2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.bd-tat-recent-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bd-tat-recent-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.bd-tat-recent-id {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.bd-tat-recent-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--slate-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bd-tat-recent-date {
+  font-size: 10.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.bd-tat-recent-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bd-tat-recent-badge.green { background: var(--green-bg); color: #059669; }
+.bd-tat-recent-badge.rose { background: var(--rose-bg); color: var(--rose); }
+.bd-tat-recent-badge.gray { background: rgba(107,140,111,.1); color: var(--muted); }
+
+@media (max-width: 640px) {
+  .bd-summary-item {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}

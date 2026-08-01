@@ -1,0 +1,218 @@
+.qp-wrap {
+  max-width: 1300px;
+}
+
+.qp-subtitle {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.qp-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.qp-card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.qp-card-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+.qp-count-sm {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 12.5px;
+}
+
+.qp-table-wrap {
+  overflow-x: auto;
+}
+
+table.qp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 950px;
+}
+
+table.qp-table thead th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+table.qp-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .15s;
+}
+
+table.qp-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+table.qp-table tbody tr:hover {
+  background: var(--surface2);
+}
+
+table.qp-table tbody tr.qp-row-overdue {
+  background: rgba(190,18,60,.025);
+}
+
+table.qp-table tbody tr.qp-row-overdue:hover {
+  background: rgba(190,18,60,.05);
+}
+
+table.qp-table tbody td {
+  padding: 11px 14px;
+  vertical-align: middle;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+.qp-id {
+  font-family: var(--mono);
+  color: var(--green);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.qp-company {
+  font-weight: 700;
+  color: var(--slate-900);
+}
+
+.qp-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.qp-mono {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.qp-open-btn {
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--green);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.qp-open-btn:hover {
+  background: var(--green-bg);
+  border-color: var(--green);
+}
+
+.qp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.qb-rose  { background: var(--rose-bg); color: var(--rose); }
+.qb-green { background: var(--green-bg); color: var(--green); }
+.qb-amber { background: var(--amber-bg); color: var(--amber); }
+.qb-sky   { background: var(--sky-bg); color: var(--sky); }
+.qb-gray  { background: rgba(107,140,111,.1); color: var(--muted); }
+
+.qp-empty {
+  text-align: center;
+  padding: 46px 20px;
+  color: var(--muted);
+}
+
+.qp-empty i {
+  font-size: 32px;
+  opacity: .25;
+  display: block;
+  margin-bottom: 10px;
+  color: var(--green);
+}
+
+.qp-loading {
+  text-align: center;
+  padding: 50px;
+  color: var(--muted);
+}
+
+/* ── Mobile card layout ─────────────────────────────────── */
+@media (max-width: 768px) {
+  .qp-table-wrap { overflow-x: unset; }
+  table.qp-table { display: block; min-width: unset; }
+  table.qp-table thead { display: none; }
+  table.qp-table tbody { display: flex; flex-direction: column; gap: 10px; padding: 12px; }
+  table.qp-table tbody tr {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    padding: 4px 0 6px;
+    position: relative;
+  }
+  table.qp-table tbody tr::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--green);
+  }
+  table.qp-table tbody tr.qp-row-overdue::before {
+    background: var(--rose);
+  }
+  table.qp-table tbody td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12.5px;
+    white-space: normal;
+    gap: 8px;
+  }
+  table.qp-table tbody td:last-child { border-bottom: none; }
+  table.qp-table tbody td[data-label]::before {
+    content: attr(data-label);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    flex-shrink: 0;
+    min-width: 90px;
+  }
+  .qp-open-btn { width: 100%; justify-content: center; }
+}

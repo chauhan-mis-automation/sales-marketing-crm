@@ -1,0 +1,251 @@
+.bum-steps {
+  display: flex;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.bum-step {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  background: var(--surface2);
+  color: var(--muted);
+}
+
+.bum-step.active {
+  background: #4a5c40;
+  color: #fff;
+}
+
+.bum-info-banner {
+  background: rgba(36, 113, 163, .08);
+  border: 1px solid rgba(36, 113, 163, .2);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  font-size: 12.5px;
+  color: #2471a3;
+  line-height: 1.6;
+}
+
+.bum-template-btn {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border-radius: 9px;
+  border: 1px solid rgba(74, 92, 64, .25);
+  background: var(--surface2);
+  color: #4a5c40;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.bum-template-btn:hover {
+  background: rgba(74, 92, 64, .1);
+}
+
+.bum-dropzone {
+  border: 2px dashed var(--border2);
+  border-radius: 12px;
+  padding: 28px 16px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--surface2);
+  transition: border-color .15s ease, background .15s ease;
+}
+
+.bum-dropzone:hover,
+.bum-dropzone.active {
+  border-color: #4a5c40;
+  background: rgba(74, 92, 64, .06);
+}
+
+.bum-dropzone-icon {
+  font-size: 32px;
+  color: #4a5c40;
+  margin-bottom: 8px;
+}
+
+.bum-dropzone-text {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--slate-900);
+}
+
+.bum-dropzone-sub {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.bum-file-info {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--slate-900);
+}
+
+.bum-file-info span {
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 6px;
+}
+
+.bum-footer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.bum-footer.center {
+  justify-content: center;
+}
+
+.bum-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.bum-stat {
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  border: 1px solid;
+}
+
+.bum-stat.good {
+  background: rgba(45, 122, 71, .08);
+  border-color: rgba(45, 122, 71, .3);
+}
+
+.bum-stat.bad {
+  background: rgba(190, 18, 60, .08);
+  border-color: rgba(190, 18, 60, .3);
+}
+
+.bum-stat.neutral {
+  background: rgba(36, 113, 163, .08);
+  border-color: rgba(36, 113, 163, .3);
+}
+
+.bum-stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  font-family: 'DM Mono', monospace;
+}
+
+.bum-stat.good .bum-stat-value { color: #2d7a47; }
+.bum-stat.bad .bum-stat-value { color: #be123c; }
+.bum-stat.neutral .bum-stat-value { color: #2471a3; }
+
+.bum-stat-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-top: 3px;
+}
+
+.bum-warning {
+  background: rgba(184, 134, 11, .1);
+  border: 1px solid rgba(184, 134, 11, .3);
+  border-radius: 9px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #92650a;
+  margin-bottom: 14px;
+}
+
+.bum-preview-wrap {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+table.bum-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+table.bum-preview-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface2);
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+
+table.bum-preview-table tbody td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+}
+
+table.bum-preview-table tbody tr.invalid {
+  background: rgba(190, 18, 60, .05);
+}
+
+.bum-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(36, 113, 163, .1);
+  color: #2471a3;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.bum-more-note {
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--muted);
+  padding: 8px;
+}
+
+.bum-done {
+  text-align: center;
+  padding: 24px 10px 8px;
+}
+
+.bum-done-icon {
+  font-size: 52px;
+  margin-bottom: 12px;
+}
+
+.bum-done-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--slate-900);
+  margin-bottom: 8px;
+}
+
+.bum-done-msg {
+  font-size: 13.5px;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+.bum-done-skip {
+  font-size: 12px;
+  color: #b8860b;
+}

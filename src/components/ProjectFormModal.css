@@ -1,0 +1,141 @@
+.pfm-section-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(74, 92, 64, 0.1);
+  border: 1px solid rgba(74, 92, 64, 0.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 18px 0 14px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #4a5c40;
+}
+
+.pfm-section-banner:first-of-type {
+  margin-top: 16px;
+}
+
+.pfm-entry-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.pfm-entry-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.pfm-remove-btn {
+  background: rgba(190, 18, 60, 0.1);
+  border: 1px solid rgba(190, 18, 60, 0.35);
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  color: #be123c;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pfm-add-more-btn {
+  width: 100%;
+  padding: 10px;
+  background: var(--surface2);
+  border: 1px dashed var(--border2);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: #b8860b;
+  margin-bottom: 8px;
+  transition: all 0.2s;
+}
+
+.pfm-add-more-btn:hover {
+  border-color: #b8860b;
+  background: rgba(184, 134, 11, 0.08);
+}
+
+.pfm-add-more-btn.small {
+  font-size: 12px;
+  padding: 8px;
+  color: #2471a3;
+}
+
+.pfm-add-more-btn.small:hover {
+  border-color: #2471a3;
+  background: rgba(36, 113, 163, 0.08);
+}
+
+.pfm-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0 16px;
+}
+
+.pfm-conditional-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.pfm-conditional-box.success {
+  background: rgba(45, 122, 71, 0.08);
+  border-color: rgba(45, 122, 71, 0.3);
+}
+
+.pfm-conditional-box.info {
+  background: rgba(36, 113, 163, 0.08);
+  border-color: rgba(36, 113, 163, 0.3);
+}
+
+.pfm-mini-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--slate-600);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 6px;
+}
+
+.pfm-conditional-box input[type='file'] {
+  width: 100%;
+  font-size: 12.5px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.pfm-existing-file {
+  font-size: 12px;
+  color: #4a5c40;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.pfm-sub-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}

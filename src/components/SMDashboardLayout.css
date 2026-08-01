@@ -1,0 +1,122 @@
+.sm-shell {
+  min-height: 100vh;
+  background: #f4f5f0;
+}
+
+.sm-main {
+  margin-left: 250px;
+  min-height: 100vh;
+  transition: margin-left .28s ease;
+}
+
+.sm-main.collapsed {
+  margin-left: 72px;
+}
+
+.sm-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(244,245,240,.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(74,92,64,.14);
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: space-between;
+}
+
+.sm-mobile-toggle {
+  display: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(74,92,64,.15);
+  background: #fff;
+  color: #4a5c40;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sm-topbar-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1a1f17;
+  letter-spacing: -.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sm-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.sm-back-btn {
+  padding: 8px 16px;
+  border-radius: 9px;
+  border: 1px solid rgba(74,92,64,.18);
+  background: #fff;
+  color: #1a1f17;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: background .15s ease, transform .15s ease;
+}
+
+.sm-back-btn:hover {
+  background: #f0f2ec;
+  transform: translateY(-1px);
+}
+
+.sm-refresh-btn {
+  padding: 8px 16px;
+  border-radius: 9px;
+  border: 1px solid rgba(74,92,64,.18);
+  background: #fff;
+  color: #1a1f17;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: background .15s ease, transform .15s ease;
+}
+
+.sm-refresh-btn:hover {
+  background: #f0f2ec;
+  transform: translateY(-1px);
+}
+
+.sm-page-content {
+  padding: 20px;
+}
+
+@media (max-width: 900px) {
+  .sm-main, .sm-main.collapsed {
+    margin-left: 0;
+  }
+  .sm-mobile-toggle {
+    display: flex;
+  }
+  .sm-topbar {
+    padding: 0 16px;
+  }
+  .sm-page-content {
+    padding: 16px;
+  }
+  .sm-refresh-btn span, .sm-back-btn span {
+    display: none;
+  }
+}

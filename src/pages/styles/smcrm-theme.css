@@ -1,0 +1,132 @@
+/* ============================================================
+   smcrm-theme.css
+   Same token set as the Apps Script CRM (Crystal White + Matt
+   Military Green) so the new React pages match pixel-for-pixel.
+   Import this once near the root of the app.
+   ============================================================ */
+:root {
+  --sm-primary: #4a5c40;
+  --sm-primary-dark: #3a4a30;
+  --sm-primary-glow: rgba(74, 92, 64, 0.14);
+
+  --sm-success: #2d7a4f;
+  --sm-success-bg: #e3f3e9;
+  --sm-warning: #b8860b;
+  --sm-warning-bg: #fbf1dc;
+  --sm-danger: #c0392b;
+  --sm-danger-bg: #fbe6e3;
+  --sm-info: #2471a3;
+  --sm-info-bg: #e2f0f8;
+
+  --sm-bg-base: #eef1ea;
+  --sm-bg-surface: #ffffff;
+  --sm-bg-card: #ffffff;
+  --sm-bg-hover: #f2f4ee;
+  --sm-bg-input: #f7f8f5;
+  --sm-border: #dde3d6;
+  --sm-border-focus: #93a488;
+
+  --sm-text-primary: #1a1f17;
+  --sm-text-secondary: #4a5240;
+  --sm-text-muted: #8a9480;
+
+  --sm-shadow: 0 2px 10px rgba(26, 46, 29, 0.07), 0 1px 3px rgba(26, 46, 29, 0.06);
+  --sm-shadow-lg: 0 12px 40px rgba(26, 46, 29, 0.18);
+
+  --sm-sidebar-bg: #3d4a34;
+  --sm-sidebar-bg-deep: #313d29;
+}
+
+.sm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.sm-badge-call { background: var(--sm-info-bg); color: var(--sm-info); }
+.sm-badge-visit { background: var(--sm-warning-bg); color: var(--sm-warning); }
+.sm-badge-meeting { background: var(--sm-primary-glow); color: var(--sm-primary); }
+.sm-badge-whatsapp { background: rgba(37, 211, 102, 0.14); color: #1a8a40; }
+.sm-badge-demo { background: rgba(211, 84, 0, 0.12); color: #d35400; }
+.sm-badge-pending { background: var(--sm-warning-bg); color: var(--sm-warning); }
+.sm-badge-done { background: var(--sm-success-bg); color: var(--sm-success); }
+
+.sm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.sm-btn-primary {
+  background: linear-gradient(135deg, var(--sm-sidebar-bg) 0%, var(--sm-sidebar-bg-deep) 100%);
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(74, 92, 64, 0.30);
+}
+.sm-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(74, 92, 64, 0.38); }
+.sm-btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+.sm-btn-ghost {
+  background: var(--sm-bg-surface);
+  color: var(--sm-text-primary);
+  border: 1px solid var(--sm-border);
+}
+.sm-btn-ghost:hover { background: var(--sm-bg-hover); border-color: var(--sm-border-focus); }
+
+.sm-cal-day {
+  min-height: 84px;
+  background: var(--sm-bg-surface);
+  border-radius: 10px;
+  padding: 6px;
+  border: 1px solid var(--sm-border);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.sm-cal-day:hover { border-color: var(--sm-border-focus); box-shadow: var(--sm-shadow); }
+.sm-cal-day.today { border: 1.5px solid var(--sm-primary); background: var(--sm-primary-glow); }
+.sm-cal-day.empty { background: transparent; border-color: transparent; cursor: default; }
+
+.sm-input {
+  width: 100%;
+  background: var(--sm-bg-input);
+  border: 1px solid var(--sm-border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 14px;
+  color: var(--sm-text-primary);
+  outline: none;
+  transition: all 0.2s;
+}
+.sm-input:focus {
+  border-color: var(--sm-border-focus);
+  box-shadow: 0 0 0 3px var(--sm-primary-glow);
+  background: var(--sm-bg-surface);
+}
+
+@keyframes sm-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: sm-fade-in 0.28s ease; }
+
+.sm-cal-event {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}

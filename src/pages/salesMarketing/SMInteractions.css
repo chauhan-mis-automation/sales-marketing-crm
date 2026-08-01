@@ -1,0 +1,215 @@
+.sin-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sin-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a1f17;
+}
+
+.sin-count {
+  font-size: 14px;
+  font-weight: 400;
+  color: #8a9480;
+}
+
+.sin-subtitle {
+  color: #8a9480;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.sin-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.sin-search {
+  position: relative;
+  flex: 2;
+  min-width: 240px;
+}
+
+.sin-search i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8a9480;
+  font-size: 12.5px;
+}
+
+.sin-search input {
+  width: 100%;
+  padding: 10px 14px 10px 36px;
+  border-radius: 9px;
+  border: 1px solid rgba(74, 92, 64, .15);
+  background: #fff;
+  font-size: 13px;
+  color: #1a1f17;
+  outline: none;
+}
+
+.sin-search input:focus {
+  border-color: #4a5c40;
+  box-shadow: 0 0 0 3px rgba(74, 92, 64, .1);
+}
+
+.sin-filters select {
+  padding: 10px 14px;
+  border-radius: 9px;
+  border: 1px solid rgba(74, 92, 64, .15);
+  background: #fff;
+  font-size: 13px;
+  color: #1a1f17;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.sin-card {
+  background: #fff;
+  border: 1px solid rgba(74, 92, 64, .12);
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(74, 92, 64, .08);
+  overflow: hidden;
+}
+
+.sin-table-wrap {
+  overflow-x: auto;
+}
+
+table.sin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 1100px;
+}
+
+table.sin-table thead th {
+  background: #f7f8f5;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: #8a9480;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(74, 92, 64, .12);
+  white-space: nowrap;
+}
+
+table.sin-table tbody tr {
+  border-bottom: 1px solid rgba(74, 92, 64, .08);
+  transition: background .15s ease;
+}
+
+table.sin-table tbody tr:hover {
+  background: #f7f8f5;
+}
+
+table.sin-table tbody td {
+  padding: 12px 14px;
+  color: #3d4a34;
+  vertical-align: top;
+}
+
+.sin-notes {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sin-date {
+  font-size: 11.5px;
+  color: #8a9480;
+  white-space: nowrap;
+}
+
+.sin-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 10.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sin-map-link {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #4a5c40;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sin-map-link:hover {
+  text-decoration: underline;
+}
+
+.sin-empty {
+  text-align: center;
+  padding: 48px;
+  color: #8a9480;
+}
+
+.sin-empty-icon {
+  font-size: 36px;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 768px) {
+  .sin-table-wrap {
+    overflow-x: visible;
+  }
+  table.sin-table {
+    min-width: unset;
+  }
+  .sin-table thead {
+    display: none;
+  }
+  .sin-table tbody,
+  .sin-table tr,
+  .sin-table td {
+    display: block;
+    width: 100%;
+  }
+  .sin-table tbody tr {
+    background: #fff;
+    border: 1px solid rgba(74, 92, 64, .15);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    padding: 12px 14px;
+  }
+  .sin-table tbody td {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(74, 92, 64, .08);
+  }
+  .sin-table tbody td:last-child {
+    border-bottom: none;
+  }
+  .sin-table tbody td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    color: #8a9480;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    margin-bottom: 4px;
+  }
+  .sin-notes {
+    max-width: unset;
+    white-space: normal;
+  }
+}

@@ -1,0 +1,54 @@
+@import "./pages/styles/smcrm-theme.css";
+
+:root {
+  --bg: #f0f4f1;
+  --bg2: #e8efe9;
+  --surface: #ffffff;
+  --surface2: #f5f8f5;
+  --border: #d4e0d6;
+  --border2: #c0d4c3;
+  --slate-900: #1a2e1d;
+  --slate-800: #243327;
+  --slate-700: #2f4233;
+  --slate-600: #3d5442;
+  --slate-500: #4f6b54;
+  --slate-400: #6a8c6f;
+  --green: #2d7a47;
+  --green-l: #38a05c;
+  --green-xl: #4bbe74;
+  --green-bg: rgba(45, 122, 71, .1);
+  --teal: #0d9488;
+  --teal-bg: rgba(13, 148, 136, .1);
+  --amber: #b45309;
+  --amber-bg: rgba(180, 83, 9, .1);
+  --rose: #be123c;
+  --rose-bg: rgba(190, 18, 60, .1);
+  --sky: #0369a1;
+  --sky-bg: rgba(3, 105, 161, .1);
+  --purple: #6d28d9;
+  --purple-bg: rgba(109, 40, 217, .1);
+  --text: #1a2e1d;
+  --text2: #3d5442;
+  --muted: #6a8c6f;
+  --muted2: #8fb095;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 3px rgba(26,46,29,.08), 0 1px 2px rgba(26,46,29,.05);
+  --shadow: 0 4px 16px rgba(26,46,29,.10), 0 1px 4px rgba(26,46,29,.06);
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+* {
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+}

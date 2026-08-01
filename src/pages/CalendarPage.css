@@ -1,0 +1,324 @@
+.calp-page {
+  background: var(--sm-bg-base);
+  padding: 4px;
+}
+
+.calp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.calp-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: var(--sm-text-primary);
+  position: relative;
+  display: inline-block;
+}
+
+.calp-title::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 34px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--sm-primary), var(--sm-primary-glow));
+}
+
+.calp-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.calp-header-actions .sm-btn-primary {
+  background: linear-gradient(135deg, var(--sm-primary), var(--sm-primary-dark));
+  box-shadow: 0 6px 18px var(--sm-primary-glow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.calp-header-actions .sm-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px var(--sm-primary-glow);
+  filter: brightness(1.06);
+}
+
+.calp-header-actions .sm-btn-primary:active {
+  transform: translateY(0);
+}
+
+.calp-error {
+  margin-bottom: 16px;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  background: var(--sm-danger-bg);
+  color: var(--sm-danger);
+  animation: calp-shake 0.4s ease;
+}
+
+@keyframes calp-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.calp-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.calp-card {
+  border-radius: 16px;
+  padding: 22px;
+  background: var(--sm-bg-card);
+  border: 1px solid var(--sm-border);
+  box-shadow: var(--sm-shadow);
+  transition: box-shadow 0.25s ease;
+}
+
+.calp-card:hover {
+  box-shadow: var(--sm-shadow-lg);
+}
+
+.calp-month-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.calp-month-label {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--sm-text-primary);
+  min-width: 150px;
+  text-align: center;
+  animation: calp-month-swap 0.3s ease;
+}
+
+@keyframes calp-month-swap {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.calp-nav-btn {
+  padding: 8px 10px !important;
+  border-radius: 10px !important;
+  transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease !important;
+}
+
+.calp-nav-btn:hover {
+  background: var(--sm-primary-glow) !important;
+  color: var(--sm-primary) !important;
+  transform: scale(1.12);
+}
+
+.calp-nav-btn:active {
+  transform: scale(0.95);
+}
+
+.calp-weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.calp-weekday {
+  padding: 8px 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--sm-text-muted);
+}
+
+/* ── Day cells: lift on hover, glow ring on "today" ─────── */
+.sm-cal-day {
+  position: relative;
+  overflow: hidden;
+  animation: calp-day-in 0.35s ease backwards;
+  transition: transform 0.18s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+}
+
+@keyframes calp-day-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.sm-cal-day:not(.empty):hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--sm-shadow-lg);
+  z-index: 2;
+}
+
+.sm-cal-day.today {
+  animation: calp-day-in 0.35s ease backwards, calp-today-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes calp-today-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--sm-primary-glow); }
+  50% { box-shadow: 0 0 0 5px var(--sm-primary-glow); }
+}
+
+.calp-day-number {
+  margin-bottom: 4px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sm-text-primary);
+  transition: color 0.15s ease;
+}
+
+.calp-day-number.today {
+  color: var(--sm-primary);
+  font-weight: 800;
+}
+
+.calp-more {
+  font-size: 10px;
+  color: var(--sm-text-muted);
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  display: inline-block;
+  background: var(--sm-bg-hover);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.calp-more:hover {
+  background: var(--sm-primary-glow);
+  color: var(--sm-primary);
+}
+
+.calp-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.calp-card-title {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--sm-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calp-empty {
+  font-size: 13px;
+  color: var(--sm-text-muted);
+  text-align: center;
+  padding: 18px 4px;
+  opacity: 0.85;
+}
+
+/* ── Sidebar event cards ─────────────────────────────────── */
+.calp-event-card {
+  margin-bottom: 8px;
+  border-radius: 10px;
+  padding: 10px;
+  animation: calp-day-in 0.3s ease backwards;
+  transition: transform 0.18s ease, box-shadow 0.2s ease;
+}
+
+.calp-event-card:hover {
+  transform: translateX(3px);
+  box-shadow: var(--sm-shadow);
+}
+
+.calp-event-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sm-text-primary);
+}
+
+.calp-event-meta-row {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.calp-event-time {
+  font-size: 11px;
+  color: var(--sm-text-muted);
+  font-weight: 600;
+}
+
+.calp-event-visit {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sm-warning);
+}
+
+.calp-event-location,
+.calp-event-notes {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--sm-text-secondary);
+}
+
+.calp-event-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+}
+
+.calp-event-actions .sm-btn {
+  padding: 5px 10px;
+  font-size: 11px;
+  transition: transform 0.15s ease, filter 0.15s ease !important;
+}
+
+.calp-event-actions .sm-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.calp-event-actions .sm-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* ── Calendar event pills inside day cells ──────────────── */
+.sm-cal-event {
+  animation: calp-pill-in 0.25s ease backwards;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.sm-cal-event:hover {
+  transform: scale(1.04);
+  filter: brightness(1.05);
+}
+
+@keyframes calp-pill-in {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Stagger day cells and sidebar cards slightly for a nicer load-in feel */
+.calp-weekdays-row:nth-of-type(2) > .sm-cal-day:nth-child(7n+1) { animation-delay: 0.02s; }
+.calp-weekdays-row:nth-of-type(2) > .sm-cal-day:nth-child(7n+2) { animation-delay: 0.04s; }
+.calp-weekdays-row:nth-of-type(2) > .sm-cal-day:nth-child(7n+3) { animation-delay: 0.06s; }
+.calp-weekdays-row:nth-of-type(2) > .sm-cal-day:nth-child(7n+4) { animation-delay: 0.08s; }
+.calp-weekdays-row:nth-of-type(2) > .sm-cal-day:nth-child(7n+5) { animation-delay: 0.10s; }
+.calp-weekdays-row:nth-of-type(2) > .sm-cal-day:nth-child(7n+6) { animation-delay: 0.12s; }
+.calp-weekdays-row:nth-of-type(2) > .sm-cal-day:nth-child(7n+7) { animation-delay: 0.14s; }
+
+.calp-sidebar .calp-card:nth-child(1) { animation: calp-day-in 0.3s ease backwards; animation-delay: 0.1s; }
+.calp-sidebar .calp-card:nth-child(2) { animation: calp-day-in 0.3s ease backwards; animation-delay: 0.18s; }
+
+@media (min-width: 1024px) {
+  .calp-grid {
+    grid-template-columns: 1fr 320px;
+  }
+}

@@ -1,0 +1,229 @@
+.smnp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 46, 29, .5);
+  backdrop-filter: blur(3px);
+  z-index: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.smnp-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 70px rgba(26, 46, 29, .3);
+  overflow: hidden;
+  animation: smnp-modal-in .25s ease;
+}
+
+@keyframes smnp-modal-in {
+  from { opacity: 0; transform: scale(.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.smnp-header {
+  padding: 16px 20px;
+  background: #f7f8f5;
+  border-bottom: 1px solid rgba(74, 92, 64, .12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1f17;
+  flex-shrink: 0;
+}
+
+.smnp-header i.fa-bell {
+  color: #4a5c40;
+  margin-right: 6px;
+}
+
+.smnp-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 20px;
+  background: #be123c;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  margin-left: 6px;
+}
+
+.smnp-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.smnp-dismiss-all-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(74, 92, 64, .2);
+  background: #fff;
+  color: #4a5240;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+}
+
+.smnp-dismiss-all-btn:hover {
+  background: rgba(190, 18, 60, .08);
+  border-color: #be123c;
+  color: #be123c;
+}
+
+.smnp-close-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #8a9480;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s ease, color .15s ease;
+}
+
+.smnp-close-btn:hover {
+  background: rgba(190, 18, 60, .08);
+  color: #be123c;
+}
+
+.smnp-list {
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.smnp-item {
+  display: flex;
+  gap: 12px;
+  background: #f7f8f5;
+  border: 1px solid rgba(74, 92, 64, .12);
+  border-radius: 12px;
+  padding: 12px 14px;
+  animation: smnp-item-in .3s ease backwards;
+}
+
+@keyframes smnp-item-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.smnp-item-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px solid #4a5c40;
+  color: #4a5c40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.smnp-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.smnp-item-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1a1f17;
+  margin-bottom: 3px;
+}
+
+.smnp-item-message {
+  font-size: 12px;
+  color: #4a5240;
+  line-height: 1.5;
+}
+
+.smnp-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.smnp-item-time {
+  font-size: 10.5px;
+  color: #8a9480;
+}
+
+.smnp-item-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.smnp-view-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  background: #4a5c40;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform .15s ease, filter .15s ease;
+}
+
+.smnp-view-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+.smnp-dismiss-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #8a9480;
+  cursor: pointer;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s ease, color .15s ease;
+}
+
+.smnp-dismiss-btn:hover {
+  background: rgba(190, 18, 60, .08);
+  color: #be123c;
+}
+
+@media (max-width: 480px) {
+  .smnp-item {
+    flex-wrap: wrap;
+  }
+  .smnp-item-actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

@@ -1,0 +1,358 @@
+.um-wrap {
+  max-width: 1200px;
+}
+
+.um-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.um-subtitle {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.btn-um-primary {
+  padding: 9px 16px;
+  border-radius: 9px;
+  border: none;
+  background: var(--green);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 2px 8px rgba(45,122,71,.3);
+}
+
+.btn-um-primary:hover {
+  background: #256539;
+}
+
+.um-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.um-card-header {
+  background: linear-gradient(135deg,#2f4233,#1a2e1d);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.um-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.um-header-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,.12);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+}
+
+.um-header-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -.2px;
+}
+
+.um-header-sub {
+  font-size: 11px;
+  color: rgba(255,255,255,.4);
+  font-family: var(--mono);
+  letter-spacing: .5px;
+}
+
+.um-count-badge {
+  background: rgba(255,255,255,.12);
+  color: rgba(255,255,255,.8);
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+.um-table-wrap {
+  overflow-x: auto;
+}
+
+table.um-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 800px;
+}
+
+table.um-table thead th {
+  padding: 11px 16px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+table.um-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+
+table.um-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+table.um-table tbody tr:hover td {
+  background: rgba(45,122,71,.04);
+}
+
+table.um-table tbody td {
+  padding: 13px 16px;
+  vertical-align: middle;
+  color: var(--text2);
+}
+
+.um-row-inactive td {
+  opacity: .45;
+}
+
+.um-empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--muted);
+}
+
+.um-user-cell {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.um-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(0,0,0,.15);
+}
+
+.um-av-superadmin { background: linear-gradient(135deg,#6d28d9,#8b5cf6); }
+.um-av-admin      { background: linear-gradient(135deg,#2d7a47,#38a05c); }
+.um-av-followup   { background: linear-gradient(135deg,#0369a1,#0ea5e9); }
+.um-av-frontend,
+.um-av-user       { background: linear-gradient(135deg,#b45309,#f59e0b); }
+.um-av-backend    { background: linear-gradient(135deg,#0d9488,#2dd4bf); }
+.um-av-design     { background: linear-gradient(135deg,#7c3aed,#a855f7); }
+
+.um-username {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--slate-900);
+}
+
+.um-you-tag {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 9.5px;
+  font-weight: 700;
+  background: var(--teal-bg);
+  color: var(--teal);
+  padding: 1px 7px;
+  border-radius: 10px;
+  border: 1px solid rgba(13,148,136,.25);
+}
+
+.um-name-cell {
+  font-weight: 600;
+  color: var(--slate-900);
+}
+
+.um-email-cell {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.um-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 10.5px;
+  font-weight: 800;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  border: 1px solid transparent;
+}
+
+.um-role-superadmin { background: linear-gradient(135deg,rgba(109,40,217,.15),rgba(139,92,246,.08)); color:#7c3aed; border-color:rgba(109,40,217,.3); }
+.um-role-admin      { background: linear-gradient(135deg,rgba(45,122,71,.15),rgba(56,160,92,.08));  color:#2d7a47; border-color:rgba(45,122,71,.3); }
+.um-role-followup   { background: linear-gradient(135deg,rgba(3,105,161,.15),rgba(14,165,233,.08)); color:#0369a1; border-color:rgba(3,105,161,.3); }
+.um-role-frontend,
+.um-role-user       { background: linear-gradient(135deg,rgba(180,83,9,.15),rgba(245,158,11,.08)); color:#b45309; border-color:rgba(180,83,9,.3); }
+.um-role-backend    { background: linear-gradient(135deg,rgba(13,148,136,.15),rgba(45,212,191,.08)); color:#0d9488; border-color:rgba(13,148,136,.3); }
+.um-role-design     { background: linear-gradient(135deg,rgba(124,58,237,.15),rgba(168,85,247,.08)); color:#7c3aed; border-color:rgba(124,58,237,.3); }
+
+.um-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.um-status-badge.active {
+  background: rgba(5,150,105,.1);
+  color: #059669;
+  border: 1px solid rgba(5,150,105,.25);
+}
+
+.um-status-badge.inactive {
+  background: var(--rose-bg);
+  color: var(--rose);
+  border: 1px solid rgba(190,18,60,.2);
+}
+
+.um-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.um-actions-cell {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.um-dash {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 4px 8px;
+}
+
+.um-action-btn {
+  padding: 6px 11px;
+  border-radius: 7px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.um-reset {
+  color: var(--amber);
+}
+.um-reset:hover {
+  background: var(--amber-bg);
+  border-color: var(--amber);
+}
+
+.um-edit {
+  color: var(--sky);
+}
+.um-edit:hover {
+  background: var(--sky-bg);
+  border-color: var(--sky);
+}
+
+.um-deactivate {
+  background: var(--rose);
+  color: #fff;
+  border-color: var(--rose);
+}
+.um-deactivate:hover {
+  background: #9f1239;
+}
+
+.um-activate {
+  background: #059669;
+  color: #fff;
+  border-color: #059669;
+}
+.um-activate:hover {
+  background: #047857;
+}
+
+/* ── Role Permissions Card ─────────────────────────────── */
+.um-roles-card .um-card-header {
+  background: var(--surface2);
+  padding: 14px 20px;
+}
+
+.um-roles-card .um-header-title {
+  color: var(--slate-900);
+  font-size: 14px;
+}
+
+.um-roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  gap: 12px;
+  padding: 16px 20px;
+}
+
+.um-role-info-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.um-role-desc {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.9;
+}
+
+@media (max-width: 640px) {
+  .um-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

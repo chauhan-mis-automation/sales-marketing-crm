@@ -1,0 +1,658 @@
+.dd-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.dd-subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+.dd-loading {
+  text-align: center;
+  padding: 60px;
+  color: var(--muted);
+}
+
+/* ── Tabs ───────────────────────────────────────────── */
+.dd-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.dd-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.dd-tab.active {
+  background: var(--green);
+  color: #fff;
+  border-color: var(--green);
+}
+
+.dd-tab:not(.active):hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+/* ── Search ─────────────────────────────────────────── */
+.dd-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 0 14px;
+  height: 40px;
+  max-width: 420px;
+  margin-bottom: 18px;
+}
+
+.dd-search i {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.dd-search input {
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 13.5px;
+  width: 100%;
+  color: var(--text);
+}
+
+/* ── Summary Cards ──────────────────────────────────── */
+.dd-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.dd-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid transparent;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.dd-summary-card.c-rose { border-top-color: var(--rose); }
+.dd-summary-card.c-teal { border-top-color: var(--teal); }
+.dd-summary-card.c-sky { border-top-color: var(--sky); }
+.dd-summary-card.c-amber { border-top-color: var(--amber); }
+
+.dd-summary-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--slate-800);
+  margin-bottom: 5px;
+}
+
+.dd-summary-badge {
+  background: var(--rose);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+
+.c-teal .dd-summary-badge { background: var(--teal); }
+.c-sky .dd-summary-badge { background: var(--sky); }
+.c-amber .dd-summary-badge { background: var(--amber); }
+
+.dd-summary-sub {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+/* ── Columns (Kanban) ───────────────────────────────── */
+.dd-columns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.dd-col {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-top: 4px solid transparent;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.dd-col-rose { border-top-color: var(--rose); }
+.dd-col-teal { border-top-color: var(--teal); }
+.dd-col-sky { border-top-color: var(--sky); }
+.dd-col-amber { border-top-color: var(--amber); }
+
+.dd-col-scroll {
+  height: 560px;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+}
+
+.dd-col-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dd-col-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dd-col-scroll::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 20px;
+}
+
+.dd-col-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--green-l);
+}
+
+.dd-col-empty {
+  text-align: center;
+  padding: 40px 12px;
+  color: var(--muted2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.dd-col-empty i {
+  font-size: 26px;
+  color: #059669;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.dd-col-empty p {
+  font-size: 12.5px;
+  margin: 0;
+}
+
+/* ── Task Card ──────────────────────────────────────── */
+.dd-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 13px;
+  box-shadow: var(--shadow-sm);
+}
+
+.dd-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 6px;
+}
+
+.dd-card-type {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--slate-600);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dd-status-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: rgba(5,150,105,.1);
+  color: #059669;
+  white-space: nowrap;
+}
+
+.dd-card-enq {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--slate-900);
+  cursor: pointer;
+  margin-bottom: 4px;
+}
+
+.dd-card-enq:hover {
+  color: var(--green);
+  text-decoration: underline;
+}
+
+.dd-card-company {
+  font-size: 12.5px;
+  color: var(--text2);
+  margin-bottom: 3px;
+}
+
+.dd-card-date {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.dd-card-company i, .dd-card-date i {
+  margin-right: 5px;
+  width: 12px;
+}
+
+.dd-toggle-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  border-top: 1px dashed var(--border);
+  padding: 8px 0 2px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dd-toggle-btn:hover {
+  color: var(--green);
+}
+
+.dd-card-details {
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+.dd-req-notes {
+  font-size: 12.5px;
+  color: var(--text2);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.dd-req-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+.dd-req-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  margin-bottom: 4px;
+}
+
+.dd-req-assignedby {
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.dd-pending-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dd-submit-btn {
+  flex: 1;
+  padding: 9px;
+  border-radius: 8px;
+  border: none;
+  background: var(--green);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dd-submit-btn:hover {
+  background: #256539;
+}
+
+.dd-file-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.dd-file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--sky);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.dd-file-chip.primary {
+  background: var(--rose);
+  color: #fff;
+  border-color: var(--rose);
+}
+
+.dd-rejection-box {
+  background: var(--rose-bg);
+  border: 1px solid rgba(190,18,60,.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+
+.dd-rejection-title {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--rose);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dd-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dd-resubmit-btn {
+  width: 100%;
+  padding: 9px;
+  border-radius: 8px;
+  border: none;
+  background: var(--sky);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.dd-resubmit-btn:hover {
+  background: #025c8a;
+}
+
+.dd-submitted-box {
+  background: var(--green-bg);
+  border: 1px solid rgba(45,122,71,.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: var(--text2);
+}
+
+.dd-edit-btn {
+  width: 100%;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--slate-700);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.dd-edit-btn:hover {
+  background: var(--surface2);
+  border-color: var(--sky);
+  color: var(--sky);
+}
+
+.dd-submitted-title {
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Work History Tab ───────────────────────────────── */
+.dd-hist-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.dd-hist-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+}
+
+.dd-hist-summary-val {
+  font-size: 24px;
+  font-weight: 800;
+  font-family: var(--mono);
+  color: var(--slate-900);
+  line-height: 1;
+}
+
+.dd-hist-summary-lbl {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.dd-history-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: auto;
+}
+
+table.dd-history-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  min-width: 900px;
+}
+
+table.dd-history-table thead th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: .8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+
+table.dd-history-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background .13s;
+}
+
+table.dd-history-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+table.dd-history-table tbody tr:hover {
+  background: var(--surface2);
+}
+
+table.dd-history-table tbody td {
+  padding: 11px 14px;
+  vertical-align: middle;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
+.dd-hist-mono {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.dd-hist-enqid {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.dd-hist-project {
+  font-weight: 700;
+  color: var(--slate-900);
+}
+
+.dd-hist-type-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.dd-hist-type-badge.type-wo {
+  background: var(--sky-bg);
+  color: var(--sky);
+}
+
+.dd-hist-type-badge.type-ga {
+  background: rgba(109,40,217,.1);
+  color: #6d28d9;
+}
+
+.dd-hist-submitted {
+  color: var(--green);
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dd-hist-pending {
+  color: var(--muted2);
+  font-style: italic;
+}
+
+.dd-hist-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.hist-badge-rose {
+  background: var(--rose-bg);
+  color: var(--rose);
+}
+
+.hist-badge-green {
+  background: var(--green-bg);
+  color: var(--green);
+}
+
+.hist-badge-amber {
+  background: var(--amber-bg);
+  color: var(--amber);
+}
+
+.hist-badge-sky {
+  background: var(--sky-bg);
+  color: var(--sky);
+}
+
+.hist-badge-gray {
+  background: rgba(107,140,111,.1);
+  color: var(--muted);
+}
+
+.hist-badge-gray-outline {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .dd-summary-grid,
+  .dd-columns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .dd-summary-grid,
+  .dd-columns {
+    grid-template-columns: 1fr;
+  }
+  .dd-hist-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
