@@ -28,9 +28,25 @@ export async function getMarketingKPIData(userInfo, month, year) {
   const isAll = userInfo.userID === 'ALL'
   const nameLower = (userInfo.name || '').toLowerCase().trim()
 
+  // ── Get list of Marketing-role users (needed when isAll, so "All" only sums Marketing team, not everyone) ──
+  let marketingUserIds = []
+  let marketingUserNames = []
+  if (isAll) {
+    const { data: marketingUsers } = await supabase
+      .from('sm_users')
+      .select('user_id, name')
+      .eq('role', 'Marketing')
+    marketingUserIds = (marketingUsers || []).map(u => u.user_id)
+    marketingUserNames = (marketingUsers || []).map(u => (u.name || '').toLowerCase().trim())
+  }
+
   // ── STEP 1: Contacts (sm_leads) added by this user this month — classify by Category ──
   let leadsQuery = supabase.from('sm_leads').select('category, created_by_id, created_date')
-  if (!isAll) leadsQuery = leadsQuery.eq('created_by_id', userInfo.userID)
+  if (isAll) {
+    leadsQuery = leadsQuery.in('created_by_id', marketingUserIds)
+  } else {
+    leadsQuery = leadsQuery.eq('created_by_id', userInfo.userID)
+  }
   const { data: leads } = await leadsQuery
 
   ;(leads || []).forEach(l => {
@@ -53,7 +69,12 @@ export async function getMarketingKPIData(userInfo, month, year) {
   let wonProjects = 0
 
   ;(allProjects || []).forEach(p => {
-    if (!isAll && (p.created_by || '').toLowerCase().trim() !== nameLower) return
+    const pCreatedByLower = (p.created_by || '').toLowerCase().trim()
+    if (isAll) {
+      if (!marketingUserNames.includes(pCreatedByLower)) return
+    } else {
+      if (pCreatedByLower !== nameLower) return
+    }
     if (!inMonth(p.created_date, month, year)) return
 
     const product = (p.required_product || '').toLowerCase().trim()
