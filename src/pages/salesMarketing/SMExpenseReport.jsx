@@ -23,7 +23,7 @@ function truncate(s, n) {
 
 export default function SMExpenseReport() {
   const { smUser } = useSMAuth()
-  const isAdmin = smUser?.role === 'Admin'
+  const isAdmin = smUser?.role === 'Admin' || smUser?.role === 'BackOffice'
 
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
