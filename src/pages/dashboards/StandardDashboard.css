@@ -673,3 +673,18 @@ table.dt tbody tr.wq-row-due-today:hover {
   font-size: 13px;
   margin-bottom: 16px;
 }
+/* Overdue Follow-ups card — blink red when count > 0 */
+.stat-card-blink {
+  animation: statCardBlink 1.2s ease-in-out infinite;
+}
+
+@keyframes statCardBlink {
+  0%, 100% {
+    background: #fff;
+    box-shadow: none;
+  }
+  50% {
+    background: #fee2e2;
+    box-shadow: 0 0 0 2px var(--rose, #e11d48);
+  }
+}

@@ -407,11 +407,11 @@ export default function StandardDashboard({ user }) {
           <div className="stat-value">{lostEnquiries.length}</div>
           <div className="stat-label">Lost</div>
         </div>
-        <div className="stat-card c-amber" onClick={() => openStatModal('Overdue Follow-ups', overdueEnquiries)}>
-          <div className="stat-icon"><i className="fas fa-bell"></i></div>
-          <div className="stat-value">{overdueEnquiries.length}</div>
-          <div className="stat-label">Overdue Follow-ups</div>
-        </div>
+        <div className={`stat-card c-amber${overdueEnquiries.length > 0 ? ' stat-card-blink' : ''}`} onClick={() => openStatModal('Overdue Follow-ups', overdueEnquiries)}>
+        <div className="stat-icon"><i className="fas fa-bell"></i></div>
+        <div className="stat-value">{overdueEnquiries.length}</div>
+        <div className="stat-label">Overdue Follow-ups</div>
+      </div>
       </div>
 
       {/* ── Unified Work Queue ──────────────────────────── */}
