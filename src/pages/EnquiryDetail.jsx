@@ -21,6 +21,7 @@ import WorkOrderModal from '../components/WorkOrderModal'
 import WorkOrderAdminReviewModal from '../components/WorkOrderAdminReviewModal'
 import AssignTeamModal from '../components/AssignTeamModal'
 import { hrsDiff, fmtHrs, DEFAULT_TAT_TARGETS, parseHrs } from '../lib/tatHelpers'
+import { addBusinessDaysExcludingSunday, formatDateISO } from '../lib/dateHelpers'
 import './EnquiryDetail.css'
 
 export default function EnquiryDetail() {
@@ -744,15 +745,15 @@ export default function EnquiryDetail() {
                           <strong>Client:</strong> {task.client_feedback}
                         </div>
                       )}
-                      {taskIndex === 0 && enquiry.next_followup_date && (
-                        <div style={{
-                          marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6,
-                          background: 'var(--rose-bg)', color: 'var(--rose)', border: '1px solid rgba(190,18,60,.2)',
-                          padding: '4px 10px', borderRadius: 20, fontSize: 11.5, fontWeight: 700
-                        }}>
-                          <i className="fas fa-calendar-day"></i> Next Follow-up: {enquiry.next_followup_date}
-                        </div>
-                      )}
+                      {taskIndex === 0 && task.client_shared_date && (
+                      <div style={{
+                        marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6,
+                        background: 'var(--rose-bg)', color: 'var(--rose)', border: '1px solid rgba(190,18,60,.2)',
+                        padding: '4px 10px', borderRadius: 20, fontSize: 11.5, fontWeight: 700
+                      }}>
+                        <i className="fas fa-calendar-day"></i> Next Follow-up: {formatDateISO(addBusinessDaysExcludingSunday(new Date(task.client_shared_date), 6))}
+                      </div>
+                    )}
                       <div className="ed-call-loggedby">
                         <i className="fas fa-calendar"></i> {formatDateTime(task.client_shared_date || task.assigned_date)}
                       </div>
@@ -796,15 +797,15 @@ export default function EnquiryDetail() {
                           ))}
                         </div>
                       )}
-                      {qtIndex === 0 && enquiry.next_followup_date && (
-                        <div style={{
-                          marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6,
-                          background: 'var(--rose-bg)', color: 'var(--rose)', border: '1px solid rgba(190,18,60,.2)',
-                          padding: '4px 10px', borderRadius: 20, fontSize: 11.5, fontWeight: 700
-                        }}>
-                          <i className="fas fa-calendar-day"></i> Next Follow-up: {enquiry.next_followup_date} (6 days after quote)
-                        </div>
-                      )}
+                      {qtIndex === 0 && qt.shared_date && (
+                      <div style={{
+                        marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 6,
+                        background: 'var(--rose-bg)', color: 'var(--rose)', border: '1px solid rgba(190,18,60,.2)',
+                        padding: '4px 10px', borderRadius: 20, fontSize: 11.5, fontWeight: 700
+                      }}>
+                        <i className="fas fa-calendar-day"></i> Next Follow-up: {formatDateISO(addBusinessDaysExcludingSunday(new Date(qt.shared_date), 6))} (6 days after quote)
+                      </div>
+                    )}
                       <div className="ed-call-loggedby">
                         <i className="fas fa-calendar"></i> {formatDateTime(qt.shared_date)}
                       </div>
