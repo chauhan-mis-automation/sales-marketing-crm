@@ -160,16 +160,16 @@ export default function StandardDashboard({ user }) {
         })
       })
 
-    // Flowchart — only "Shared with Client" (awaiting client decision). Due date is
-    // computed fresh from THIS task's own client_shared_date (+6 business days), NOT
-    // from the shared enquiry.next_followup_date — that field can get silently
-    // overwritten by an unrelated Log Call, which was pulling this in too early.
+    // Flowchart — only "Shared with Client" (awaiting client decision). Due date
+    // uses the enquiry's own Next Follow-up Date (matches original Apps Script logic),
+    // falling back to the task's raw client_shared_date if that field is empty.
     latestPerEnquiry(fcTasks)
       .filter(t => t.status === 'Shared with Client' && enqMap[t.enquiry_id]?.status === 'Active')
       .forEach(t => {
         const enq = enqMap[t.enquiry_id]
-        if (!t.client_shared_date) return
-        const dueDate = formatDateISO(addBusinessDaysExcludingSunday(new Date(t.client_shared_date), 6))
+        const rawDue = enq?.next_followup_date || t.client_shared_date
+        if (!rawDue) return
+        const dueDate = rawDue.slice(0, 10)
         if (dueDate > today) return
         const isOverdue = dueDate < today
         items.push({
@@ -295,6 +295,14 @@ export default function StandardDashboard({ user }) {
     })
   }, [overdueEnquiries, fcTasks, gaTasks, qtTasks, poTasks, woTasks, qrTasks, enqMap, isAdmin, today])
 
+  // Work Queue summary counts (matches original Apps Script's 6-card breakdown)
+  const wqTotalCount = workQueueItems.length
+  const wqOverdueCount = workQueueItems.filter(i => i.type === 'followup' && i.severity === 'overdue').length
+  const wqFollowupTodayCount = workQueueItems.filter(i => i.type === 'followup' && i.severity !== 'overdue').length
+  const wqFlowchartCount = workQueueItems.filter(i => i.type === 'flowchart').length
+  const wqQuotationCount = workQueueItems.filter(i => i.type === 'quotation').length
+  const wqGaCount = workQueueItems.filter(i => i.type === 'ga_drawing').length
+
   // latest quotation amount per enquiry
   const latestQuotationAmountMap = useMemo(() => {
     const map = {}
@@ -407,11 +415,11 @@ export default function StandardDashboard({ user }) {
           <div className="stat-value">{lostEnquiries.length}</div>
           <div className="stat-label">Lost</div>
         </div>
-        <div className={`stat-card c-amber${overdueEnquiries.length > 0 ? ' stat-card-blink' : ''}`} onClick={() => openStatModal('Overdue Follow-ups', overdueEnquiries)}>
-        <div className="stat-icon"><i className="fas fa-bell"></i></div>
-        <div className="stat-value">{overdueEnquiries.length}</div>
-        <div className="stat-label">Overdue Follow-ups</div>
-      </div>
+        <div className="stat-card c-amber" onClick={() => openStatModal('Overdue Follow-ups', overdueEnquiries)}>
+          <div className="stat-icon"><i className="fas fa-bell"></i></div>
+          <div className="stat-value">{overdueEnquiries.length}</div>
+          <div className="stat-label">Overdue Follow-ups</div>
+        </div>
       </div>
 
       {/* ── Unified Work Queue ──────────────────────────── */}
@@ -437,6 +445,21 @@ export default function StandardDashboard({ user }) {
         </div>
       ) : (
         <div className="card" style={{ marginTop: -20 }}>
+          <div className="wq-summary-row">
+            {[
+              ['Total Pending', wqTotalCount, wqTotalCount > 0 ? 'var(--rose)' : 'var(--muted)'],
+              ['Overdue Calls', wqOverdueCount, wqOverdueCount > 0 ? 'var(--rose)' : 'var(--muted)'],
+              ['Follow-up Today', wqFollowupTodayCount, wqFollowupTodayCount > 0 ? 'var(--amber)' : 'var(--muted)'],
+              ['Flowchart', wqFlowchartCount, wqFlowchartCount > 0 ? '#6d28d9' : 'var(--muted)'],
+              ['Quotation', wqQuotationCount, wqQuotationCount > 0 ? 'var(--sky)' : 'var(--muted)'],
+              ['GA Drawing', wqGaCount, wqGaCount > 0 ? 'var(--teal)' : 'var(--muted)'],
+            ].map(([label, count, color], i) => (
+              <div key={label} className="wq-summary-cell" style={{ color }}>
+                <div className="wq-summary-value">{count}</div>
+                <div className="wq-summary-label">{label}</div>
+              </div>
+            ))}
+          </div>
           <div className="table-wrap">
             <table className="dt">
               <thead>
