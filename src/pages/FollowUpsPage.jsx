@@ -129,7 +129,7 @@ export default function FollowUpsPage({ currentUser, isAdmin = false, onUpdateFo
       ) : (
         <div className="fup-list">
           {visible.map((f) => (
-            <FollowUpRow key={f.followUpID} f={f} onClose={handleClose} onUpdate={onUpdateFollowUp} />
+            <FollowUpRow key={f.followUpID} f={f} onClose={handleClose} onUpdate={onUpdateFollowUp} isAdmin={isAdmin} />
           ))}
         </div>
       )}
@@ -158,13 +158,30 @@ function matchesFilters(f, search, typeFilter, ratingFilter) {
 }
 
 const RATING_BADGE = { Pro: 'sm-badge-done', Neutral: 'sm-badge-meeting', Anti: 'sm-badge-danger', 'Yet to meet': 'sm-badge-call' };
+const RATING_TOOLTIP = {
+  Pro: 'ENGAGEMENT: PRO — Client is positive and interested',
+  Neutral: 'ENGAGEMENT: NEUTRAL — Client has not shown strong interest either way',
+  Anti: 'ENGAGEMENT: ANTI — Client is not interested / gave a negative response',
+  'Yet to meet': 'ENGAGEMENT: YET TO MEET — Client has not been met yet',
+};
+const TYPE_TOOLTIP = {
+  Call: 'FOLLOW-UP TYPE: PHONE CALL',
+  Visit: 'FOLLOW-UP TYPE: IN-PERSON VISIT',
+  WhatsApp: 'FOLLOW-UP TYPE: WHATSAPP MESSAGE',
+  Meeting: 'FOLLOW-UP TYPE: MEETING',
+  Demo: 'FOLLOW-UP TYPE: PRODUCT DEMO',
+};
+const STATUS_TOOLTIP = {
+  Pending: 'STATUS: PENDING — This follow-up has not been completed yet',
+  Done: 'STATUS: DONE — This follow-up has been completed',
+};
 const VOLUME_TOOLTIP = {
   High: 'BUSINESS VOLUME: HIGH — LARGE DEAL POTENTIAL',
   Medium: 'BUSINESS VOLUME: MEDIUM — MODERATE DEAL POTENTIAL',
   Low: 'BUSINESS VOLUME: LOW — SMALL DEAL POTENTIAL',
 };
 
-function FollowUpRow({ f, onClose, onUpdate }) {
+function FollowUpRow({ f, onClose, onUpdate, isAdmin }) {
   const borderColor = f.type === 'Visit' ? 'var(--sm-warning)' : 'var(--sm-info)';
   return (
     <div className="fup-row" style={{ borderLeft: `4px solid ${borderColor}` }}>
@@ -174,9 +191,14 @@ function FollowUpRow({ f, onClose, onUpdate }) {
             {f.leadName}{f.company ? <span className="fup-row-company"> — {f.company}</span> : ''}
           </div>
           <div className="fup-row-badges">
-            <span className={`sm-badge ${TYPE_BADGE[f.type] || 'sm-badge-call'}`}>{f.type}</span>
-            {f.rating && <span className={`sm-badge ${RATING_BADGE[f.rating] || 'sm-badge-call'}`} title={`ENGAGEMENT: ${f.rating.toUpperCase()}`}>{f.rating.toUpperCase()}</span>}
-            <span className={`sm-badge ${f.status === 'Done' ? 'sm-badge-done' : 'sm-badge-pending'}`}>{f.status.toUpperCase()}</span>
+            {isAdmin && f.salesPerson && (
+              <span className="sm-badge sm-badge-owner" title="ASSIGNED SALES PERSON — this follow-up belongs to this team member">
+                👤 {f.salesPerson}
+              </span>
+            )}
+            <span className={`sm-badge ${TYPE_BADGE[f.type] || 'sm-badge-call'}`} title={TYPE_TOOLTIP[f.type] || `FOLLOW-UP TYPE: ${(f.type || '').toUpperCase()}`}>{f.type}</span>
+            {f.rating && <span className={`sm-badge ${RATING_BADGE[f.rating] || 'sm-badge-call'}`} title={RATING_TOOLTIP[f.rating] || `ENGAGEMENT: ${f.rating.toUpperCase()}`}>{f.rating.toUpperCase()}</span>}
+            <span className={`sm-badge ${f.status === 'Done' ? 'sm-badge-done' : 'sm-badge-pending'}`} title={STATUS_TOOLTIP[f.status] || `STATUS: ${(f.status || '').toUpperCase()}`}>{f.status.toUpperCase()}</span>
             {f.businessVolume && (
               <span className="sm-badge sm-badge-volume" title={VOLUME_TOOLTIP[f.businessVolume] || `BUSINESS VOLUME: ${f.businessVolume.toUpperCase()}`}>
                 💰 {f.businessVolume.toUpperCase()}

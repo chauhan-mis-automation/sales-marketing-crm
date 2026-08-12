@@ -198,3 +198,9 @@
   font-weight: 500;
   font-size: 12px;
 }
+
+.sm-badge-owner {
+  background: var(--sm-primary-bg, #e0e7ff);
+  color: var(--sm-primary, #4338ca);
+  font-weight: 700;
+}
