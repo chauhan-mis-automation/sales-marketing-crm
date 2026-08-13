@@ -8,6 +8,7 @@ export default function SubmitDesignWorkModal({ task, companyName, isResubmissio
   const { user } = useAuth()
   const [files, setFiles] = useState([])
   const [remarks, setRemarks] = useState('')
+  const [asPerRef, setAsPerRef] = useState('')
   const [saving, setSaving] = useState(false)
 
   function handleFileSelect(e) {
@@ -23,6 +24,10 @@ export default function SubmitDesignWorkModal({ task, companyName, isResubmissio
   async function handleSubmit() {
     if (files.length === 0) {
       alert('Please upload the completed file')
+      return
+    }
+    if (!asPerRef) {
+      alert('Please answer: Have you prepared the GA Drawing as per the reference file?')
       return
     }
 
@@ -43,11 +48,13 @@ export default function SubmitDesignWorkModal({ task, companyName, isResubmissio
         }
       }
 
+      const notesWithConfirmation = `[Prepared as per reference file: ${asPerRef}]${remarks.trim() ? ' ' + remarks.trim() : ''}`
+
       await supabase
         .from('ga_drawing_tasks')
         .update({
           designer_file_url: fileUrls.join(', '),
-          designer_notes: remarks.trim(),
+          designer_notes: notesWithConfirmation,
           designer_submission_date: new Date().toISOString(),
           status: 'Submitted for Review',
           revision_count: isResubmission ? (task.revision_count || 0) + 1 : (task.revision_count || 0)
@@ -131,6 +138,15 @@ export default function SubmitDesignWorkModal({ task, companyName, isResubmissio
             ))}
           </div>
         )}
+      </div>
+
+      <div className="modal-form-group">
+        <label>Have you prepared the GA Drawing as per the reference file? *</label>
+        <select value={asPerRef} onChange={e => setAsPerRef(e.target.value)}>
+          <option value="">-- Select --</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
       </div>
 
       <div className="modal-form-group">

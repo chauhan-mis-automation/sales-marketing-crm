@@ -315,12 +315,16 @@ function TaskCard({ task, companyName, isExpanded, onToggle, onOpenEnquiry, onSu
                   <div className="dd-req-assignedby"><i className="fas fa-user"></i> Assigned by: {task.assigned_by || task.authorized_by}</div>
                 )}
               </div>
+              {requestFiles.length > 0 && (
+                <div className="dd-file-row">
+                  {requestFiles.map((url, i) => (
+                    <a key={i} href={url} target="_blank" rel="noreferrer" className="dd-file-chip">
+                      <i className="fas fa-paperclip"></i> Ref File {requestFiles.length > 1 ? i + 1 : ''}
+                    </a>
+                  ))}
+                </div>
+              )}
               <div className="dd-pending-actions">
-                {requestFiles.length > 0 && (
-                  <a href={requestFiles[0]} target="_blank" rel="noreferrer" className="dd-file-chip">
-                    <i className="fas fa-paperclip"></i> Ref File
-                  </a>
-                )}
                 <button className="dd-submit-btn" onClick={() => onSubmitClick(task, false)}>
                   <i className={`fas ${task._type === 'wo' ? 'fa-edit' : 'fa-upload'}`}></i>{' '}
                   {task._type === 'wo' ? 'Fill Form' : 'Submit Work'}
@@ -369,7 +373,7 @@ function TaskCard({ task, companyName, isExpanded, onToggle, onOpenEnquiry, onSu
                   <div className="dd-file-row">
                     {adminRefFiles.map((url, i) => (
                       <a key={i} href={url} target="_blank" rel="noreferrer" className="dd-file-chip primary">
-                        <i className="fas fa-file"></i> View Admin Ref File
+                        <i className="fas fa-file"></i> View Admin Ref File {adminRefFiles.length > 1 ? i + 1 : ''}
                       </a>
                     ))}
                   </div>

@@ -24,6 +24,16 @@ import { hrsDiff, fmtHrs, DEFAULT_TAT_TARGETS, parseHrs } from '../lib/tatHelper
 import { addBusinessDaysExcludingSunday, formatDateISO } from '../lib/dateHelpers'
 import './EnquiryDetail.css'
 
+// Parses a leading "[Question label: Yes/No]" marker out of a notes string
+// (used for GA Drawing designer/admin confirmation checks) so it can be
+// rendered as a clear badge instead of buried inline text.
+function parseConfirmationNote(notes) {
+  if (!notes) return { label: null, answer: null, rest: '' }
+  const m = notes.match(/^\[(.+?):\s*(Yes|No)\]\s*([\s\S]*)$/)
+  if (!m) return { label: null, answer: null, rest: notes }
+  return { label: m[1], answer: m[2], rest: m[3] }
+}
+
 export default function EnquiryDetail() {
   const { enquiryId } = useParams()
   const navigate = useNavigate()
@@ -551,6 +561,24 @@ export default function EnquiryDetail() {
                           </div>
                         </div>
                       )}
+                      {task.designer_notes && (() => {
+                        const { label, answer, rest } = parseConfirmationNote(task.designer_notes)
+                        return (
+                          <div style={{ marginTop: 10 }}>
+                            {label && (
+                              <div className={`ed-confirm-badge ${answer === 'Yes' ? 'ed-confirm-yes' : 'ed-confirm-no'}`}>
+                                {answer === 'Yes' ? '✅' : '❌'} {label}: <strong>{answer}</strong>
+                              </div>
+                            )}
+                            {rest && (
+                              <div className="ed-note-callout" style={{ marginTop: label ? 6 : 0 }}>
+                                <span className="ed-note-label">Designer Remarks</span>
+                                {rest}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
 
                       {task.status === 'Client Approved' && task.assigned_date && task.client_approved_date && (() => {
                         const designerTat = hrsDiff(task.assigned_date, task.designer_submission_date)
@@ -603,12 +631,24 @@ export default function EnquiryDetail() {
                         )
                       })()}
 
-                      {task.admin_review_notes && (
-                        <div className="ed-note-callout ed-note-admin">
-                          <span className="ed-note-label">Admin Remarks</span>
-                          {task.admin_review_notes}
-                        </div>
-                      )}
+                      {task.admin_review_notes && (() => {
+                        const { label, answer, rest } = parseConfirmationNote(task.admin_review_notes)
+                        return (
+                          <div style={{ marginTop: 10 }}>
+                            {label && (
+                              <div className={`ed-confirm-badge ${answer === 'Yes' ? 'ed-confirm-yes' : 'ed-confirm-no'}`}>
+                                {answer === 'Yes' ? '✅' : '❌'} {label}: <strong>{answer}</strong>
+                              </div>
+                            )}
+                            {rest && (
+                              <div className="ed-note-callout ed-note-admin" style={{ marginTop: label ? 6 : 0 }}>
+                                <span className="ed-note-label">Admin Remarks</span>
+                                {rest}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })()}
                       {adminRefUrls.length > 0 && (
                         <div className="ed-call-meta">
                           {adminRefUrls.map((url, i) => (

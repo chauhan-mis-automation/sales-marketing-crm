@@ -8,6 +8,7 @@ export default function GADrawingAdminReviewModal({ enquiry, latestTask, onClose
   const { user } = useAuth()
   const [decision, setDecision] = useState('')
   const [remarks, setRemarks] = useState('')
+  const [checkedSpec, setCheckedSpec] = useState('')
   const [files, setFiles] = useState([])
   const [saving, setSaving] = useState(false)
 
@@ -28,15 +29,20 @@ export default function GADrawingAdminReviewModal({ enquiry, latestTask, onClose
       alert('Please select a decision')
       return
     }
+    if (!checkedSpec) {
+      alert('Please answer: Have you checked the GA Drawing as per the specification required?')
+      return
+    }
 
     setSaving(true)
     try {
       if (decision === 'approve') {
+        const notesWithConfirmation = `[Checked as per specification: ${checkedSpec}]${remarks.trim() ? ' ' + remarks.trim() : ''}`
         await supabase
           .from('ga_drawing_tasks')
           .update({
             status: 'Approved by Admin',
-            admin_review_notes: remarks.trim(),
+            admin_review_notes: notesWithConfirmation,
             admin_review_by: user?.name || '',
             admin_review_date: new Date().toISOString()
           })
@@ -84,7 +90,7 @@ export default function GADrawingAdminReviewModal({ enquiry, latestTask, onClose
           .from('ga_drawing_tasks')
           .update({
             status: 'Rejected by Admin',
-            admin_review_notes: remarks.trim(),
+            admin_review_notes: `[Checked as per specification: ${checkedSpec}]${remarks.trim() ? ' ' + remarks.trim() : ''}`,
             admin_review_by: user?.name || '',
             admin_review_date: new Date().toISOString(),
             admin_reference_file_url: fileUrls.join(', '),
@@ -138,6 +144,15 @@ export default function GADrawingAdminReviewModal({ enquiry, latestTask, onClose
           <i className="fas fa-file"></i> View Drawing File
         </a>
       )}
+
+      <div className="modal-form-group">
+        <label>Have you checked the GA Drawing as per the specification required? *</label>
+        <select value={checkedSpec} onChange={e => setCheckedSpec(e.target.value)}>
+          <option value="">-- Select --</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+      </div>
 
       <div className="modal-form-group">
         <label>Review Remarks</label>
