@@ -139,7 +139,7 @@ export default function SourceDetailModal({ source, leads, onClose }) {
           <div className="sdm-table-wrap">
             <table className="sdm-table">
               <thead>
-                <tr><th>Name</th><th>Company</th><th>Category</th><th>Status</th><th>Assigned To</th></tr>
+                <tr><th>Name</th><th>Company</th><th>Category</th><th>Status</th><th>Added By</th><th>Assigned To</th></tr>
               </thead>
               <tbody>
                 {recentLeads.map(l => (
@@ -151,6 +151,7 @@ export default function SourceDetailModal({ source, leads, onClose }) {
                     <td>{l.company || '—'}</td>
                     <td>{l.category || '—'}</td>
                     <td><span className="sdm-badge" style={{ background: `${STATUS_COLORS[l.status] || '#888'}18`, color: STATUS_COLORS[l.status] || '#888' }}>{l.status}</span></td>
+                    <td>{l.created_by || '—'}</td>
                     <td>{l.assigned_to || 'Unassigned'}</td>
                   </tr>
                 ))}

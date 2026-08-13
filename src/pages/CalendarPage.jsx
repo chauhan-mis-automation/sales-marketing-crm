@@ -17,6 +17,7 @@ export default function CalendarPage({ currentUser, isAdmin = false, onUpdateFol
   const [loading, setLoading] = useState(true);
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [loadError, setLoadError] = useState('');
+  const [search, setSearch] = useState('');
 
   const salesPersonId = isAdmin ? null : currentUser?.userID;
 
@@ -38,15 +39,25 @@ export default function CalendarPage({ currentUser, isAdmin = false, onUpdateFol
     setMonth(m); setYear(y);
   }
 
+  const filteredEvents = useMemo(() => {
+    const s = search.toLowerCase().trim();
+    if (!s) return events;
+    return events.filter((ev) =>
+      (ev.leadName || '').toLowerCase().includes(s) ||
+      (ev.company || '').toLowerCase().includes(s) ||
+      (ev.notes || '').toLowerCase().includes(s)
+    );
+  }, [events, search]);
+
   const eventMap = useMemo(() => {
     const map = {};
-    events.forEach((ev) => {
+    filteredEvents.forEach((ev) => {
       const d = new Date(ev.followUpDate);
       const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
       (map[key] ||= []).push(ev);
     });
     return map;
-  }, [events]);
+  }, [filteredEvents]);
 
   const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
   const todayEvents = eventMap[todayKey] || [];
@@ -75,6 +86,11 @@ export default function CalendarPage({ currentUser, isAdmin = false, onUpdateFol
       </div>
 
       {loadError && <div className="calp-error">⚠️ {loadError}</div>}
+
+      <div className="calp-search-bar">
+        <i className="fas fa-search"></i>
+        <input placeholder="Search lead name, company, notes…" value={search} onChange={e => setSearch(e.target.value)} />
+      </div>
 
       <div className="calp-grid">
         {/* Month grid */}
@@ -118,14 +134,14 @@ export default function CalendarPage({ currentUser, isAdmin = false, onUpdateFol
           <SidebarCard title={`Today's Follow-ups (${todayCalls.length})`} icon={<Phone size={14} />}>
             {todayCalls.length === 0 && <Empty text="No calls today" />}
             {todayCalls.map((ev) => (
-              <EventCard key={ev.followUpID} ev={ev} onClose={handleClose} onUpdate={onUpdateFollowUp} />
+              <EventCard key={ev.followUpID} ev={ev} onClose={handleClose} onUpdate={onUpdateFollowUp} isAdmin={isAdmin} />
             ))}
           </SidebarCard>
 
           <SidebarCard title={`Today's Visits (${todayVisits.length})`} icon={<Car size={14} />}>
             {todayVisits.length === 0 && <Empty text="No visits today" />}
             {todayVisits.map((ev) => (
-              <EventCard key={ev.followUpID} ev={ev} visit onClose={handleClose} onUpdate={onUpdateFollowUp} />
+              <EventCard key={ev.followUpID} ev={ev} visit onClose={handleClose} onUpdate={onUpdateFollowUp} isAdmin={isAdmin} />
             ))}
           </SidebarCard>
         </div>
@@ -154,7 +170,7 @@ function Empty({ text }) {
   return <p className="calp-empty">{text}</p>;
 }
 
-function EventCard({ ev, visit, onClose, onUpdate }) {
+function EventCard({ ev, visit, onClose, onUpdate, isAdmin }) {
   return (
     <div
       className="calp-event-card"
@@ -166,6 +182,11 @@ function EventCard({ ev, visit, onClose, onUpdate }) {
     >
       <div className="calp-event-name">{ev.leadName}</div>
       <div className="calp-event-meta-row">
+        {isAdmin && ev.salesPerson && (
+          <span className="sm-badge calp-badge-owner" title="ASSIGNED SALES PERSON — this follow-up belongs to this team member">
+            👤 {ev.salesPerson}
+          </span>
+        )}
         <span className={`sm-badge ${TYPE_BADGE[ev.type] || 'sm-badge-call'}`}>{ev.type}</span>
         {ev.followUpTime && <span className="calp-event-time">{formatTime(ev.followUpTime)}</span>}
       </div>
@@ -177,9 +198,6 @@ function EventCard({ ev, visit, onClose, onUpdate }) {
       <div className="calp-event-actions">
         <button className="sm-btn sm-btn-primary" onClick={() => onUpdate?.(ev)}>
           🔄 Update Follow-up
-        </button>
-        <button className="sm-btn sm-btn-ghost" onClick={() => onClose(ev.followUpID)}>
-          Close
         </button>
       </div>
     </div>

@@ -176,14 +176,14 @@ export default function SMContactsPage({ scope }) {
               <tr>
                 <th>Contact Name</th><th>Company</th><th>Email ID</th><th>Phone</th><th>Source</th>
                 <th>Category</th><th>Engagement</th><th>Region</th><th>City</th><th>State</th>
-                <th>Address</th><th>Business Vol</th><th>Status</th><th>Assigned To</th><th>Actions</th>
+                <th>Address</th><th>Business Vol</th><th>Status</th><th>Added By</th><th>Assigned To</th><th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading || dropdownsLoading ? (
-                <tr><td colSpan={15} className="scp-empty"><i className="fas fa-spinner fa-spin"></i> Loading…</td></tr>
+                <tr><td colSpan={16} className="scp-empty"><i className="fas fa-spinner fa-spin"></i> Loading…</td></tr>
               ) : pageSlice.length === 0 ? (
-                <tr><td colSpan={15} className="scp-empty">No contacts found</td></tr>
+                <tr><td colSpan={16} className="scp-empty">No contacts found</td></tr>
               ) : (
                 pageSlice.map(lead => (
                   <tr key={lead.id}>
@@ -219,6 +219,7 @@ export default function SMContactsPage({ scope }) {
                         {lead.status?.toUpperCase()}
                       </span>
                     </td>
+                    <td data-label="Added By">{lead.created_by || '—'}</td>
                     <td data-label="Assigned To">{lead.assigned_to || <span className="scp-unassigned">Unassigned</span>}</td>
                     <td data-label="Actions">
                       <div className="scp-actions">

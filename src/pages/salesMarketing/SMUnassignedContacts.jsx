@@ -12,6 +12,7 @@ export default function SMUnassignedContacts() {
   const [loading, setLoading] = useState(true)
   const [leads, setLeads] = useState([])
   const [assigningLead, setAssigningLead] = useState(null)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     loadLeads()
@@ -28,10 +29,23 @@ export default function SMUnassignedContacts() {
     setLoading(false)
   }
 
+  const filteredLeads = leads.filter(l => {
+    const s = search.toLowerCase().trim()
+    if (!s) return true
+    return (l.name || '').toLowerCase().includes(s) ||
+      (l.phone || '').toLowerCase().includes(s) ||
+      (l.company || '').toLowerCase().includes(s)
+  })
+
   return (
     <div>
       <h1 className="uc-title">Unassigned Contacts ({leads.length})</h1>
       <p className="uc-subtitle">Assign these Contacts to your sales team</p>
+
+      <div className="uc-search-bar">
+        <i className="fas fa-search"></i>
+        <input placeholder="Search name, phone, company…" value={search} onChange={e => setSearch(e.target.value)} />
+      </div>
 
       <div className="uc-card">
         <div className="uc-table-wrap">
@@ -45,10 +59,10 @@ export default function SMUnassignedContacts() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={7} className="uc-empty"><i className="fas fa-spinner fa-spin"></i> Loading…</td></tr>
-              ) : leads.length === 0 ? (
+              ) : filteredLeads.length === 0 ? (
                 <tr><td colSpan={7} className="uc-empty"><i className="fas fa-check-circle"></i> No unassigned contacts — all caught up!</td></tr>
               ) : (
-                leads.map(lead => (
+                filteredLeads.map(lead => (
                   <tr key={lead.id}>
                     <td>
                       <div className="uc-contact-cell">

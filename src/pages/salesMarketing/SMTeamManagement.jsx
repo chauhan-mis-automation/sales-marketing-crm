@@ -20,6 +20,7 @@ export default function SMTeamManagement() {
   const [showAdd, setShowAdd] = useState(false)
   const [editingUser, setEditingUser] = useState(null)
   const [busyId, setBusyId] = useState(null)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     loadUsers()
@@ -31,6 +32,14 @@ export default function SMTeamManagement() {
     setUsers(data || [])
     setLoading(false)
   }
+
+  const filteredUsers = users.filter(u => {
+    const s = search.toLowerCase().trim()
+    if (!s) return true
+    return (u.name || '').toLowerCase().includes(s) ||
+      (u.email || '').toLowerCase().includes(s) ||
+      (u.role || '').toLowerCase().includes(s)
+  })
 
   async function toggleStatus(user) {
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active'
@@ -60,16 +69,21 @@ export default function SMTeamManagement() {
         </button>
       </div>
 
+      <div className="stm-search-bar">
+        <i className="fas fa-search"></i>
+        <input placeholder="Search name, email, role…" value={search} onChange={e => setSearch(e.target.value)} />
+      </div>
+
       {loading ? (
         <div className="stm-empty"><i className="fas fa-spinner fa-spin"></i> Loading…</div>
-      ) : users.length === 0 ? (
+      ) : filteredUsers.length === 0 ? (
         <div className="stm-empty">
           <div className="stm-empty-icon">👥</div>
-          <p>No team members yet</p>
+          <p>No team members found</p>
         </div>
       ) : (
         <div className="stm-grid">
-          {users.map((u, idx) => {
+          {filteredUsers.map((u, idx) => {
             const roleColor = ROLE_COLORS[u.role] || '#4a5c40'
             const isActive = u.status === 'Active'
             return (

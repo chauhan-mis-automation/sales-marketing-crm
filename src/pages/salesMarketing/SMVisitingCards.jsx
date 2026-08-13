@@ -8,6 +8,7 @@ export default function SMVisitingCards() {
   const [loading, setLoading] = useState(true)
   const [showAddContact, setShowAddContact] = useState(false)
   const [previewCard, setPreviewCard] = useState(null)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     loadCards()
@@ -24,6 +25,14 @@ export default function SMVisitingCards() {
     setCards(data || [])
     setLoading(false)
   }
+
+  const filteredCards = cards.filter(c => {
+    const s = search.toLowerCase().trim()
+    if (!s) return true
+    return (c.name || '').toLowerCase().includes(s) ||
+      (c.company || '').toLowerCase().includes(s) ||
+      (c.designation || '').toLowerCase().includes(s)
+  })
 
   function fmtDate(d) {
     if (!d) return '—'
@@ -44,19 +53,21 @@ export default function SMVisitingCards() {
         </button>
       </div>
 
+      <div className="svc-search-bar">
+        <i className="fas fa-search"></i>
+        <input placeholder="Search name, company…" value={search} onChange={e => setSearch(e.target.value)} />
+      </div>
+
       {loading ? (
         <div className="svc-empty"><i className="fas fa-spinner fa-spin"></i> Loading…</div>
-      ) : cards.length === 0 ? (
+      ) : filteredCards.length === 0 ? (
         <div className="svc-empty">
           <div className="svc-empty-icon">📇</div>
-          <p>No visiting cards uploaded yet</p>
-          <button className="svc-upload-btn" style={{ marginTop: 14 }} onClick={() => setShowAddContact(true)}>
-            <i className="fas fa-camera"></i> Upload your first card
-          </button>
+          <p>No visiting cards found</p>
         </div>
       ) : (
         <div className="svc-grid">
-          {cards.map((c, idx) => (
+          {filteredCards.map((c, idx) => (
             <div className="svc-card" key={c.lead_id} style={{ animationDelay: `${idx * 0.05}s` }}>
               <div className="svc-card-image" onClick={() => setPreviewCard(c)}>
                 <img src={c.card_image_url} alt={c.name} loading="lazy" />

@@ -215,7 +215,6 @@ function FollowUpRow({ f, onClose, onUpdate, isAdmin }) {
         </div>
         <div className="fup-row-actions">
           <button className="sm-btn sm-btn-primary" onClick={() => onUpdate?.(f)}>🔄 Update Follow-up</button>
-          <button className="sm-btn sm-btn-ghost" onClick={() => onClose(f.followUpID)}>✅ Close</button>
         </div>
       </div>
     </div>
