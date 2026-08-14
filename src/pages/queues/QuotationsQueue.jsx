@@ -11,6 +11,7 @@ export default function QuotationsQueue() {
   const { user } = useAuth()
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     loadData()
@@ -39,13 +40,25 @@ export default function QuotationsQueue() {
     setLoading(false)
   }
 
+  const filteredRows = rows.filter(({ enquiry }) => {
+    const s = search.toLowerCase().trim()
+    if (!s) return true
+    return (enquiry.company_name || '').toLowerCase().includes(s) ||
+      (enquiry.contact_name || '').toLowerCase().includes(s) ||
+      (enquiry.enquiry_id || '').toLowerCase().includes(s)
+  })
+
   return (
     <div className="qp-wrap">
       <p className="qp-subtitle">Enquiries in quotation stage — a running log of quotations sent to clients</p>
 
       <div className="qp-card">
         <div className="qp-card-header">
-          <div className="qp-card-title">💰 Quotation Queue <span className="qp-count-sm">({rows.length})</span></div>
+          <div className="qp-card-title">💰 Quotation Queue <span className="qp-count-sm">({filteredRows.length})</span></div>
+          <div className="qp-search">
+            <i className="fas fa-search"></i>
+            <input placeholder="Search company, contact, ID…" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
         </div>
 
         <div className="qp-table-wrap">
@@ -67,15 +80,15 @@ export default function QuotationsQueue() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={10}><div className="qp-loading">Loading…</div></td></tr>
-              ) : rows.length === 0 ? (
+              ) : filteredRows.length === 0 ? (
                 <tr><td colSpan={10}>
                   <div className="qp-empty">
                     <i className="fas fa-file-invoice-dollar"></i>
-                    <p>No quotations sent yet.</p>
+                    <p>{rows.length === 0 ? 'No quotations sent yet.' : 'No matches found'}</p>
                   </div>
                 </td></tr>
               ) : (
-                rows.map(({ task, enquiry }) => (
+                filteredRows.map(({ task, enquiry }) => (
                   <tr key={task.id} onClick={() => navigate(`/enquiries/${enquiry.enquiry_id}`)}>
                     <td data-label="ID"><span className="qp-id">{enquiry.enquiry_id}</span></td>
                     <td data-label="Company"><span className="qp-company">{enquiry.company_name || '—'}</span></td>

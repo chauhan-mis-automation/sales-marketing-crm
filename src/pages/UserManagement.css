@@ -356,3 +356,34 @@ table.um-table tbody td {
     align-items: flex-start;
   }
 }
+
+/* ── Search bar ─────────────────────────────────────────── */
+.um-search-bar {
+  position: relative;
+  max-width: 380px;
+  margin: 14px 18px 0;
+}
+
+.um-search-bar i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8a9480;
+  font-size: 12px;
+}
+
+.um-search-bar input {
+  width: 100%;
+  padding: 8px 12px 8px 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  font-size: 12.5px;
+  outline: none;
+}
+
+.um-search-bar input:focus {
+  border-color: #2471a3;
+  box-shadow: 0 0 0 3px rgba(36, 113, 163, .1);
+}

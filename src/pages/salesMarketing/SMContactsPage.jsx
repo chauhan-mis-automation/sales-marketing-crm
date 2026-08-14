@@ -11,6 +11,15 @@ import ScheduleFollowUpModal from '../../components/ScheduleFollowUpModal'
 import BulkUploadModal from '../../components/BulkUploadModal'
 import './SMContactsPage.css'
 
+function formatAddedOn(dateStr) {
+  if (!dateStr) return { date: '—', time: '' }
+  const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return { date: '—', time: '' }
+  const datePart = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+  const timePart = d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true })
+  return { date: datePart, time: timePart }
+}
+
 const STATUS_COLORS = {
   New: '#0369a1', Assigned: '#6d28d9', Contacted: '#0d9488',
   Interested: '#b45309', 'Follow-up': '#b45309', Closed: '#059669', Lost: '#be123c',
@@ -174,19 +183,30 @@ export default function SMContactsPage({ scope }) {
           <table className="scp-table">
             <thead>
               <tr>
-                <th>Contact Name</th><th>Company</th><th>Email ID</th><th>Phone</th><th>Source</th>
+                <th>Added On</th><th>Contact Name</th><th>Company</th><th>Email ID</th><th>Phone</th><th>Source</th>
                 <th>Category</th><th>Engagement</th><th>Region</th><th>City</th><th>State</th>
                 <th>Address</th><th>Business Vol</th><th>Status</th><th>Added By</th><th>Assigned To</th><th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading || dropdownsLoading ? (
-                <tr><td colSpan={16} className="scp-empty"><i className="fas fa-spinner fa-spin"></i> Loading…</td></tr>
+                <tr><td colSpan={17} className="scp-empty"><i className="fas fa-spinner fa-spin"></i> Loading…</td></tr>
               ) : pageSlice.length === 0 ? (
-                <tr><td colSpan={16} className="scp-empty">No contacts found</td></tr>
+                <tr><td colSpan={17} className="scp-empty">No contacts found</td></tr>
               ) : (
                 pageSlice.map(lead => (
                   <tr key={lead.id}>
+                    <td data-label="Added On" className="scp-mono" style={{ whiteSpace: 'nowrap', fontSize: 11.5 }}>
+                      {(() => {
+                        const { date, time } = formatAddedOn(lead.created_date)
+                        return (
+                          <>
+                            {date}
+                            {time && <div className="scp-sub">{time}</div>}
+                          </>
+                        )
+                      })()}
+                    </td>
                     <td data-label="Contact Name">
                       <strong>{lead.name}</strong>
                       {lead.designation && <div className="scp-sub">{lead.designation}</div>}

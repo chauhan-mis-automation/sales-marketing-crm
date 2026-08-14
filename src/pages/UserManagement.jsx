@@ -19,6 +19,7 @@ export default function UserManagement() {
   const { user: currentUser } = useAuth()
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
   const [showAddModal, setShowAddModal] = useState(false)
   const [editTarget, setEditTarget] = useState(null)
@@ -58,6 +59,15 @@ export default function UserManagement() {
 
   const activeCount = users.filter(u => u.active).length
 
+  const filteredUsers = users.filter(u => {
+    const s = search.toLowerCase().trim()
+    if (!s) return true
+    return (u.username || '').toLowerCase().includes(s) ||
+      (u.name || '').toLowerCase().includes(s) ||
+      (u.email || '').toLowerCase().includes(s) ||
+      (u.role || '').toLowerCase().includes(s)
+  })
+
   return (
     <div className="um-wrap">
       <div className="um-toolbar">
@@ -79,6 +89,11 @@ export default function UserManagement() {
           <span className="um-count-badge">{activeCount} active / {users.length} total</span>
         </div>
 
+        <div className="um-search-bar">
+          <i className="fas fa-search"></i>
+          <input placeholder="Search username, name, email, role…" value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+
         <div className="um-table-wrap">
           <table className="um-table">
             <thead>
@@ -94,10 +109,10 @@ export default function UserManagement() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={6} className="um-empty">Loading…</td></tr>
-              ) : users.length === 0 ? (
-                <tr><td colSpan={6} className="um-empty">No users found</td></tr>
+              ) : filteredUsers.length === 0 ? (
+                <tr><td colSpan={6} className="um-empty">{users.length === 0 ? 'No users found' : 'No matches found'}</td></tr>
               ) : (
-                users.map(u => {
+                filteredUsers.map(u => {
                 const isCurrentUser = u.username === currentUser?.username
                 const initial = (u.name || u.username || '?').charAt(0).toUpperCase()
                 return (

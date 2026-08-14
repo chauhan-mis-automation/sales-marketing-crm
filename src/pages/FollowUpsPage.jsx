@@ -13,6 +13,9 @@ export default function FollowUpsPage({ currentUser, isAdmin = false, onUpdateFo
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('All');
   const [ratingFilter, setRatingFilter] = useState('All');
+  const [personFilter, setPersonFilter] = useState('All');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -33,10 +36,18 @@ export default function FollowUpsPage({ currentUser, isAdmin = false, onUpdateFo
   const now = new Date();
   const todayStr = now.toDateString();
 
+  const salesPersonOptions = useMemo(() => {
+    const names = new Set();
+    all.forEach((f) => { if (f.salesPerson) names.add(f.salesPerson); });
+    return Array.from(names).sort();
+  }, [all]);
+
+  const filters = { search, typeFilter, ratingFilter, personFilter, fromDate, toDate };
+
   const counts = useMemo(() => {
     const c = { Today: 0, Overdue: 0, Upcoming: 0, All: 0 };
     all.forEach((f) => {
-      if (!matchesFilters(f, search, typeFilter, ratingFilter)) return;
+      if (!matchesFilters(f, filters)) return;
       c.All++;
       if (f.status !== 'Pending') return;
       const d = new Date(f.followUpDate);
@@ -46,11 +57,11 @@ export default function FollowUpsPage({ currentUser, isAdmin = false, onUpdateFo
       else if (d > now) c.Upcoming++;
     });
     return c;
-  }, [all, search, typeFilter, ratingFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [all, search, typeFilter, ratingFilter, personFilter, fromDate, toDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const visible = useMemo(() => {
     return all.filter((f) => {
-      if (!matchesFilters(f, search, typeFilter, ratingFilter)) return false;
+      if (!matchesFilters(f, filters)) return false;
       const d = new Date(f.followUpDate);
       const dStr = d.toDateString();
 
@@ -60,7 +71,7 @@ export default function FollowUpsPage({ currentUser, isAdmin = false, onUpdateFo
       if (tab === 'Upcoming') return d > now && dStr !== todayStr;
       return true; // All
     });
-  }, [all, tab, search, typeFilter, ratingFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [all, tab, search, typeFilter, ratingFilter, personFilter, fromDate, toDate]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleClose(followUpId) {
     await completeFollowUp(followUpId);
@@ -84,7 +95,7 @@ export default function FollowUpsPage({ currentUser, isAdmin = false, onUpdateFo
           <Search size={14} className="fup-search-icon" />
           <input
             className="sm-input fup-search-input"
-            placeholder="Search name, company..."
+            placeholder="Search name, company, person, type, status…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -101,7 +112,32 @@ export default function FollowUpsPage({ currentUser, isAdmin = false, onUpdateFo
           <option value="Anti">Anti</option>
           <option value="Yet to meet">Yet to meet</option>
         </select>
-        <button className="sm-btn sm-btn-ghost" onClick={() => { setSearch(''); setTypeFilter('All'); setRatingFilter('All'); }}>Reset</button>
+        {isAdmin && salesPersonOptions.length > 0 && (
+          <select className="sm-input fup-type-select" value={personFilter} onChange={(e) => setPersonFilter(e.target.value)}>
+            <option value="All">All Users</option>
+            {salesPersonOptions.map((name) => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
+        )}
+        <div className="fup-date-range">
+          <input
+            type="date"
+            className="sm-input fup-date-input"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            title="From date"
+          />
+          <span className="fup-date-sep">to</span>
+          <input
+            type="date"
+            className="sm-input fup-date-input"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            title="To date"
+          />
+        </div>
+        <button className="sm-btn sm-btn-ghost" onClick={() => { setSearch(''); setTypeFilter('All'); setRatingFilter('All'); setPersonFilter('All'); setFromDate(''); setToDate(''); }}>Reset</button>
       </div>
 
       {/* Tabs */}
@@ -144,17 +180,40 @@ export default function FollowUpsPage({ currentUser, isAdmin = false, onUpdateFo
   );
 }
 
-function matchesFilters(f, search, typeFilter, ratingFilter) {
+function matchesFilters(f, { search, typeFilter, ratingFilter, personFilter, fromDate, toDate }) {
   const typeOk = typeFilter === 'All' || f.type === typeFilter;
   const ratingOk = !ratingFilter || ratingFilter === 'All' || f.rating === ratingFilter;
-  const s = search.toLowerCase().trim();
+  const personOk = !personFilter || personFilter === 'All' || f.salesPerson === personFilter;
+
+  let dateOk = true;
+  if ((fromDate || toDate) && f.followUpDate) {
+    const d = new Date(f.followUpDate);
+    if (fromDate) {
+      const from = new Date(fromDate);
+      from.setHours(0, 0, 0, 0);
+      if (d < from) dateOk = false;
+    }
+    if (dateOk && toDate) {
+      const to = new Date(toDate);
+      to.setHours(23, 59, 59, 999);
+      if (d > to) dateOk = false;
+    }
+  }
+
+  const s = (search || '').toLowerCase().trim();
   const searchOk =
     !s ||
     (f.leadName || '').toLowerCase().includes(s) ||
     (f.company || '').toLowerCase().includes(s) ||
     (f.notes || '').toLowerCase().includes(s) ||
-    (f.location || '').toLowerCase().includes(s);
-  return typeOk && ratingOk && searchOk;
+    (f.location || '').toLowerCase().includes(s) ||
+    (f.salesPerson || '').toLowerCase().includes(s) ||
+    (f.type || '').toLowerCase().includes(s) ||
+    (f.rating || '').toLowerCase().includes(s) ||
+    (f.status || '').toLowerCase().includes(s) ||
+    (f.businessVolume || '').toLowerCase().includes(s);
+
+  return typeOk && ratingOk && personOk && dateOk && searchOk;
 }
 
 const RATING_BADGE = { Pro: 'sm-badge-done', Neutral: 'sm-badge-meeting', Anti: 'sm-badge-danger', 'Yet to meet': 'sm-badge-call' };

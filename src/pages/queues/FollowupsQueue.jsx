@@ -9,6 +9,7 @@ export default function FollowupsQueue() {
   const navigate = useNavigate()
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     loadData()
@@ -33,13 +34,25 @@ export default function FollowupsQueue() {
     return diff
   }
 
+  const filteredRows = rows.filter(e => {
+    const s = search.toLowerCase().trim()
+    if (!s) return true
+    return (e.company_name || '').toLowerCase().includes(s) ||
+      (e.contact_name || '').toLowerCase().includes(s) ||
+      (e.enquiry_id || '').toLowerCase().includes(s)
+  })
+
   return (
     <div className="qp-wrap">
       <p className="qp-subtitle">Enquiries with overdue or due follow-ups</p>
 
       <div className="qp-card">
         <div className="qp-card-header">
-          <div className="qp-card-title">🔔 Follow-up Queue <span className="qp-count-sm">({rows.length})</span></div>
+          <div className="qp-card-title">🔔 Follow-up Queue <span className="qp-count-sm">({filteredRows.length})</span></div>
+          <div className="qp-search">
+            <i className="fas fa-search"></i>
+            <input placeholder="Search company, contact, ID…" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
         </div>
 
         <div className="qp-table-wrap">
@@ -60,15 +73,15 @@ export default function FollowupsQueue() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={9}><div className="qp-loading">Loading…</div></td></tr>
-              ) : rows.length === 0 ? (
+              ) : filteredRows.length === 0 ? (
                 <tr><td colSpan={9}>
                   <div className="qp-empty">
                     <i className="fas fa-check-circle"></i>
-                    <p>No overdue follow-ups! 🎉</p>
+                    <p>{rows.length === 0 ? 'No overdue follow-ups! 🎉' : 'No matches found'}</p>
                   </div>
                 </td></tr>
               ) : (
-                rows.map(e => {
+                filteredRows.map(e => {
                   const days = overdueDays(e.next_followup_date)
                   return (
                     <tr key={e.id} className={days > 0 ? 'qp-row-overdue' : ''} onClick={() => navigate(`/enquiries/${e.enquiry_id}`)}>

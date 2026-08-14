@@ -11,6 +11,7 @@ export default function FlowchartsQueue() {
   const { user } = useAuth()
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     loadData()
@@ -39,13 +40,25 @@ export default function FlowchartsQueue() {
     setLoading(false)
   }
 
+  const filteredRows = rows.filter(({ enquiry }) => {
+    const s = search.toLowerCase().trim()
+    if (!s) return true
+    return (enquiry.company_name || '').toLowerCase().includes(s) ||
+      (enquiry.contact_name || '').toLowerCase().includes(s) ||
+      (enquiry.enquiry_id || '').toLowerCase().includes(s)
+  })
+
   return (
     <div className="qp-wrap">
       <p className="qp-subtitle">Enquiries with pending flowchart work — sent to client, confirmation still pending</p>
 
       <div className="qp-card">
         <div className="qp-card-header">
-          <div className="qp-card-title">🗂 Flowchart Queue <span className="qp-count-sm">({rows.length})</span></div>
+          <div className="qp-card-title">🗂 Flowchart Queue <span className="qp-count-sm">({filteredRows.length})</span></div>
+          <div className="qp-search">
+            <i className="fas fa-search"></i>
+            <input placeholder="Search company, contact, ID…" value={search} onChange={e => setSearch(e.target.value)} />
+          </div>
         </div>
 
         <div className="qp-table-wrap">
@@ -66,15 +79,15 @@ export default function FlowchartsQueue() {
             <tbody>
               {loading ? (
                 <tr><td colSpan={9}><div className="qp-loading">Loading…</div></td></tr>
-              ) : rows.length === 0 ? (
+              ) : filteredRows.length === 0 ? (
                 <tr><td colSpan={9}>
                   <div className="qp-empty">
                     <i className="fas fa-check-circle"></i>
-                    <p>No flowchart work pending! 🎉</p>
+                    <p>{rows.length === 0 ? 'No flowchart work pending! 🎉' : 'No matches found'}</p>
                   </div>
                 </td></tr>
               ) : (
-                rows.map(({ task, enquiry }) => (
+                filteredRows.map(({ task, enquiry }) => (
                   <tr key={task.id} onClick={() => navigate(`/enquiries/${enquiry.enquiry_id}`)}>
                     <td data-label="ID"><span className="qp-id">{enquiry.enquiry_id}</span></td>
                     <td data-label="Company"><span className="qp-company">{enquiry.company_name || '—'}</span></td>

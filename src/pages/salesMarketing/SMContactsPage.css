@@ -99,6 +99,25 @@
 
 .scp-table-wrap {
   overflow-x: auto;
+  scrollbar-width: auto; /* Firefox: always show */
+}
+
+.scp-table-wrap::-webkit-scrollbar {
+  height: 12px;
+}
+
+.scp-table-wrap::-webkit-scrollbar-track {
+  background: #f1f3ee;
+  border-radius: 6px;
+}
+
+.scp-table-wrap::-webkit-scrollbar-thumb {
+  background: #4a5c40;
+  border-radius: 6px;
+}
+
+.scp-table-wrap::-webkit-scrollbar-thumb:hover {
+  background: #3a4a32;
 }
 
 table.scp-table {
