@@ -114,10 +114,19 @@ export default function AddContactModal({ onClose, onSaved }) {
   async function handleSave(planMeeting = false) {
     if (!form.name.trim()) { alert('Full Name is required'); return }
     if (!form.phone.trim()) { alert('Phone/Mobile is required'); return }
+    if (!form.email.trim()) { alert('Email is required'); return }
+    if (!form.company.trim()) { alert('Company is required'); return }
+    if (!form.designation.trim()) { alert('Designation is required'); return }
     if (!form.source) { alert('Source is required'); return }
+    if (!form.businessVolume) { alert('Business Volume is required'); return }
+    if (!form.industry) { alert('Industry is required'); return }
     if (!form.category) { alert('Category is required'); return }
+    if (!form.rating) { alert('Business Rating is required'); return }
+    if (!form.region) { alert('Region is required'); return }
+    if (!form.address.trim()) { alert('Address is required'); return }
     if (!form.state) { alert('State is required'); return }
     if (!form.city) { alert('City is required'); return }
+    if (!form.notes.trim()) { alert('Notes is required'); return }
 
     setSaving(true)
     try {
@@ -287,39 +296,39 @@ export default function AddContactModal({ onClose, onSaved }) {
           </div>
         </div>
         <div className="modal-form-group">
-          <label>Email</label>
+          <label>Email *</label>
           <input type="email" value={form.email} onChange={e => updateField('email', e.target.value)} placeholder="example@mail.com" />
         </div>
       </div>
 
       <div className="modal-form-row">
         <div className="modal-form-group">
-          <label>Company</label>
+          <label>Company *</label>
           <input value={form.company} onChange={e => updateField('company', e.target.value)} placeholder="Company name" />
         </div>
         <div className="modal-form-group">
-          <label>Designation</label>
+          <label>Designation *</label>
           <input value={form.designation} onChange={e => updateField('designation', e.target.value)} placeholder="Job title" />
         </div>
       </div>
 
       <div className="modal-form-row">
         <DropdownWithAdd label="Source *" categoryKey="Source" categoryLabel="Source" value={form.source} onChange={v => updateField('source', v)} options={source} />
-        <DropdownWithAdd label="Business Volume" categoryKey="BusinessVolume" categoryLabel="Business Volume" value={form.businessVolume} onChange={v => updateField('businessVolume', v)} options={businessVolume} />
+        <DropdownWithAdd label="Business Volume *" categoryKey="BusinessVolume" categoryLabel="Business Volume" value={form.businessVolume} onChange={v => updateField('businessVolume', v)} options={businessVolume} />
       </div>
 
       <div className="modal-form-row">
-        <DropdownWithAdd label="Industry" categoryKey="Industry" categoryLabel="Industry" value={form.industry} onChange={v => updateField('industry', v)} options={industry} />
+        <DropdownWithAdd label="Industry *" categoryKey="Industry" categoryLabel="Industry" value={form.industry} onChange={v => updateField('industry', v)} options={industry} />
         <DropdownWithAdd label="Category *" categoryKey="Category" categoryLabel="Category" value={form.category} onChange={v => updateField('category', v)} options={category} />
       </div>
 
       <div className="modal-form-row">
-        <DropdownWithAdd label="Business Rating" categoryKey="Rating" categoryLabel="Rating" value={form.rating} onChange={v => updateField('rating', v)} options={rating} />
-        <DropdownWithAdd label="Region" categoryKey="Region" categoryLabel="Region" value={form.region} onChange={v => updateField('region', v)} options={region} />
+        <DropdownWithAdd label="Business Rating *" categoryKey="Rating" categoryLabel="Rating" value={form.rating} onChange={v => updateField('rating', v)} options={rating} />
+        <DropdownWithAdd label="Region *" categoryKey="Region" categoryLabel="Region" value={form.region} onChange={v => updateField('region', v)} options={region} />
       </div>
 
       <div className="modal-form-group">
-        <label>Address</label>
+        <label>Address *</label>
         <input value={form.address} onChange={e => updateField('address', e.target.value)} placeholder="Street / area" />
       </div>
 
@@ -350,7 +359,7 @@ export default function AddContactModal({ onClose, onSaved }) {
       </div>
 
       <div className="modal-form-group">
-        <label>Notes</label>
+        <label>Notes *</label>
         <textarea value={form.notes} onChange={e => updateField('notes', e.target.value)} placeholder="Initial notes…" />
       </div>
 

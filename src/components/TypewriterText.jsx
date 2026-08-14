@@ -17,7 +17,6 @@ export default function TypewriterText({ text, speed = 45, className }) {
   return (
     <span className={className}>
       {displayed}
-      <span className="tw-cursor">|</span>
     </span>
   )
 }
