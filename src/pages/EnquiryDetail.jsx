@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { useAuth } from '../context/AuthContext'
@@ -34,6 +34,78 @@ function parseConfirmationNote(notes) {
   return { label: m[1], answer: m[2], rest: m[3] }
 }
 
+// ── Version labeling (chain inheritance, matches exact business rule) ──
+// Flowchart keeps its own independent counter: V1=blank, V2=A, V3=B...
+// Quotation's OWN V1 inherits whatever Flowchart's CURRENT letter is at
+// that moment (or the bare enquiry ID if no Flowchart exists yet); each
+// further Quotation revision then advances its OWN letter by one from
+// wherever it started.
+// GA Drawing's OWN V1 inherits Quotation's CURRENT letter if a Quotation
+// exists, otherwise Flowchart's current letter, otherwise the bare
+// enquiry ID; each further GA Drawing revision advances by one from there.
+function parseVersionNum(versionStr) {
+  const m = String(versionStr || 'V1').match(/\d+/)
+  return m ? parseInt(m[0], 10) : 1
+}
+
+function letterFor(n) {
+  if (n <= 0) return ''
+  return String.fromCharCode(64 + n)
+}
+
+function buildVersionLabels(enquiryId, flowchartTasks, quotations, gaDrawingTasks) {
+  const docs = [
+    ...(flowchartTasks || []).map(t => ({ type: 'fc', key: `fc-${t.id}`, versionNum: parseVersionNum(t.version), ts: t.assigned_date })),
+    ...(quotations || []).map(t => ({ type: 'qt', key: `qt-${t.id}`, versionNum: parseVersionNum(t.version), ts: t.shared_date })),
+    ...(gaDrawingTasks || []).map(t => ({ type: 'ga', key: `ga-${t.id}`, versionNum: parseVersionNum(t.version), ts: t.assigned_date })),
+  ].filter(d => d.ts)
+    .sort((a, b) => new Date(a.ts) - new Date(b.ts))
+
+  const labels = {}
+
+  let fcCounter = 0
+  let fcExists = false
+
+  let qtBaseCounter = 0
+  let qtRevisionOffset = 0
+  let qtExists = false
+  let qtLatestCounter = 0
+
+  let gaBaseCounter = 0
+  let gaRevisionOffset = 0
+
+  docs.forEach((d) => {
+    if (d.type === 'fc') {
+      if (d.versionNum > 1) fcCounter += 1
+      labels[d.key] = `${enquiryId || ''}${letterFor(fcCounter)}`
+      fcExists = true
+    } else if (d.type === 'qt') {
+      if (d.versionNum === 1) {
+        qtBaseCounter = fcExists ? fcCounter : 0
+        qtRevisionOffset = 0
+      } else {
+        qtRevisionOffset += 1
+      }
+      qtLatestCounter = qtBaseCounter + qtRevisionOffset
+      labels[d.key] = `${enquiryId || ''}${letterFor(qtLatestCounter)}`
+      qtExists = true
+    } else if (d.type === 'ga') {
+      if (d.versionNum === 1) {
+        if (qtExists) gaBaseCounter = qtLatestCounter
+        else if (fcExists) gaBaseCounter = fcCounter
+        else gaBaseCounter = 0
+        gaRevisionOffset = 0
+      } else {
+        gaRevisionOffset += 1
+      }
+      const gaCounterValue = gaBaseCounter + gaRevisionOffset
+      labels[d.key] = `${enquiryId || ''}${letterFor(gaCounterValue)}`
+    }
+  })
+
+  return labels
+}
+
 export default function EnquiryDetail() {
   const { enquiryId } = useParams()
   const navigate = useNavigate()
@@ -46,6 +118,11 @@ export default function EnquiryDetail() {
   const [flowchartTasks, setFlowchartTasks] = useState([])
   const [quotations, setQuotations] = useState([])
   const [gaDrawingTasks, setGaDrawingTasks] = useState([])
+
+  const versionLabels = useMemo(
+    () => buildVersionLabels(enquiry?.enquiry_id, flowchartTasks, quotations, gaDrawingTasks),
+    [enquiry?.enquiry_id, flowchartTasks, quotations, gaDrawingTasks]
+  )
   const [questionnaires, setQuestionnaires] = useState([])
   const [purchaseOrders, setPurchaseOrders] = useState([])
   const [workOrders, setWorkOrders] = useState([])
@@ -92,7 +169,7 @@ export default function EnquiryDetail() {
       .from('stage_logs')
       .select('*')
       .eq('enquiry_id', enquiryId)
-      .order('id', { ascending: true })
+      .order('id', { ascending: false })
 
     const { data: callData } = await supabase
       .from('call_history')
@@ -520,10 +597,11 @@ export default function EnquiryDetail() {
                   const userRole = (user?.role || '').toLowerCase().trim()
                   const canReviewNow = (userRole === 'admin' || userRole === 'superadmin') && task.status === 'Submitted for Review'
                   const canTakeAction = userRole === 'followup' && (task.status === 'Approved by Admin' || task.status === 'Shared with Client')
+                  const gaVersionLabel = versionLabels[`ga-${task.id}`] || task.version
                   return (
                     <div key={task.id} className="ed-call-item">
                       <div className="ed-call-top">
-                        <span className="badge b-gray">{task.version}</span>
+                        <span className="badge b-gray">{gaVersionLabel}</span>
                         <span className={`badge ${taskStatusClass(task.status)}`}>{task.status}</span>
                         {task.revision_count > 0 && (
                           <span className="badge b-amber">Revision: {task.revision_count}</span>
@@ -753,10 +831,11 @@ export default function EnquiryDetail() {
                 {flowchartTasks.map((task, taskIndex) => {
                   const fileUrls = (task.designer_file_url || task.request_file_url || '').split(',').map(u => u.trim()).filter(Boolean)
                   const clientRefUrls = (task.client_reference_file_url || '').split(',').map(u => u.trim()).filter(Boolean)
+                  const fcVersionLabel = versionLabels[`fc-${task.id}`] || task.version
                   return (
                     <div key={task.id} className="ed-call-item">
                       <div className="ed-call-top">
-                        <span className="badge b-gray">{task.version}</span>
+                        <span className="badge b-gray">{fcVersionLabel}</span>
                         <span className={`badge ${taskStatusClass(task.status)}`}>{task.status}</span>
                       </div>
                       {task.designer_notes && (
@@ -814,10 +893,11 @@ export default function EnquiryDetail() {
               <div className="ed-call-list">
                 {quotations.map((qt, qtIndex) => {
                   const fileUrls = (qt.file_url || '').split(',').map(u => u.trim()).filter(Boolean)
+                  const qtVersionLabel = versionLabels[`qt-${qt.id}`] || qt.version
                   return (
                     <div key={qt.id} className="ed-call-item">
                       <div className="ed-call-top">
-                        <span className="badge b-gray">{qt.version}</span>
+                        <span className="badge b-gray">{qtVersionLabel}</span>
                         <span className={`badge ${taskStatusClass(qt.status)}`}>{qt.status}</span>
                       </div>
                       {qt.amount && (

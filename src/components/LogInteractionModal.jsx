@@ -72,10 +72,9 @@ export default function LogInteractionModal({ followUp, currentUser, onClose, on
 
   const [saving, setSaving] = useState(false)
 
-  // Client requested: skip the GPS reach/start/close-meeting tracker entirely for
-  // Visits — always show the same outcome fields that used to appear only after
-  // "Close Meeting" was pressed.
-  const showRestOfForm = true
+  // For a non-visit interaction, the rest of the form is always visible.
+  // For a Visit, the rest of the form only appears once the meeting is closed.
+  const showRestOfForm = !isVisit(type) || trackerStep === 'ended'
 
   useEffect(() => {
     if (!isVisit(type)) return
@@ -329,6 +328,59 @@ export default function LogInteractionModal({ followUp, currentUser, onClose, on
               <div className="lim-last-visit-notes">{lastVisit.notes}</div>
             </div>
           )}
+
+          <div className="lim-tracker-box">
+            <div className="lim-tracker-status">STATUS: {trackerStatusLabel.toUpperCase()}</div>
+            <div className="lim-tracker-btns">
+              <button
+                className={`lim-tracker-btn ${trackerStep === 'idle' ? 'active' : ''}`}
+                onClick={handleReached}
+                disabled={trackerStep !== 'idle'}
+              >
+                <i className="fas fa-map-marker-alt"></i> Reached Location
+              </button>
+              <button
+                className={`lim-tracker-btn ${trackerStep === 'reached' ? 'active' : ''}`}
+                onClick={handleStartMeeting}
+                disabled={trackerStep !== 'reached'}
+              >
+                <i className="fas fa-play"></i> Start Meeting
+              </button>
+              <button
+                className={`lim-tracker-btn danger ${trackerStep === 'started' ? 'active' : ''}`}
+                onClick={handleCloseMeeting}
+                disabled={trackerStep !== 'started'}
+              >
+                <i className="fas fa-stop"></i> Close Meeting
+              </button>
+            </div>
+
+            <div className="lim-tracker-times">
+              Arrival: {arrivalTime ? arrivalTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '--:--'} |
+              {' '}Wait: {waitMinutes !== null ? `${waitMinutes} mins` : '--'} |
+              {' '}Duration: {durationMinutes !== null ? `${durationMinutes} mins` : '--'}
+            </div>
+
+            <div className="lim-location-row">
+              <button className="lim-fetch-btn" onClick={handleReached} disabled={trackerStep !== 'idle'}>
+                <i className="fas fa-map-marker-alt"></i> Fetch Reached Location
+              </button>
+              {reached.status === 'captured' && <span className="lim-captured"><i className="fas fa-check"></i> Location captured</span>}
+              {reached.status === 'fetching' && <span className="lim-fetching">Fetching…</span>}
+              {reached.status === 'idle' && <span className="lim-not-fetched">Not fetched</span>}
+            </div>
+            {reached.address && <div className="lim-address-box"><i className="fas fa-map-marker-alt"></i> {reached.address}</div>}
+
+            <div className="lim-location-row">
+              <button className="lim-fetch-btn" onClick={handleCloseMeeting} disabled={trackerStep !== 'started' && trackerStep !== 'ended'}>
+                <i className="fas fa-flag-checkered"></i> Fetch Close Location
+              </button>
+              {closeLoc.status === 'captured' && <span className="lim-captured"><i className="fas fa-check"></i> Close location captured</span>}
+              {closeLoc.status === 'fetching' && <span className="lim-fetching">Fetching…</span>}
+              {closeLoc.status === 'idle' && <span className="lim-not-fetched">Not fetched</span>}
+            </div>
+            {closeLoc.address && <div className="lim-address-box"><i className="fas fa-flag-checkered"></i> {closeLoc.address}</div>}
+          </div>
         </>
       )}
 
