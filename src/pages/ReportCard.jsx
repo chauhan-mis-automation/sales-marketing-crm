@@ -126,7 +126,7 @@ export default function ReportCard() {
       supabase.from('ga_drawing_tasks').select('*'),
       supabase.from('work_orders').select('*'),
       supabase.from('questionnaire_rounds').select('*'),
-      supabase.from('stage_logs').select('*').eq('stage_name', 'Flowchart Approved'),
+      supabase.from('stage_logs').select('*').eq('stage_name', 'Assigned'),
       supabase.from('call_history').select('*'),
       supabase.from('dropdown_list').select('flowchart, quotation, ga_drawing, work_order, tat_admin_approval, questionnaire').order('id', { ascending: true }).limit(1),
     ])
@@ -303,46 +303,64 @@ export default function ReportCard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [woTasks, currentUser, filter.fromDate, filter.toDate, selectedEnquiry, relevantModules, isReviewerRole])
 
-  const fcStats = computeAssigneeStats(
-    myFc, 'Client Approved', ['Client Revision Requested'], targets.flowchart,
-    { startField: 'assigned_date', endField: 'decision_date', successStatuses: ['Client Approved'], personField: 'assigned_to' }
-  )
-  const qtTatInfo = useMemo(() => {
-    if (!currentUser || !relevantModules.includes('Quotation')) return { avgTat: null, onTimePct: null }
-
-    const fcApprovedMap = {}
+  // latest "Assigned" stage_log timestamp per enquiry — used as the TAT
+  // start-point for Backend's own Flowchart / Quotation / Questionnaire
+  // turnaround (GA Drawing / Work Order stay on their existing Designer/Admin
+  // based tracking, untouched below).
+  const backendAssignedMap = useMemo(() => {
+    const map = {}
     stageLogs.forEach(l => {
       if (!myBackendEnquiryIds.has(l.enquiry_id)) return
-      const existing = fcApprovedMap[l.enquiry_id]
-      if (!existing || new Date(l.date_entered) > new Date(existing)) fcApprovedMap[l.enquiry_id] = l.date_entered
+      const existing = map[l.enquiry_id]
+      if (!existing || new Date(l.date_entered) < new Date(existing)) map[l.enquiry_id] = l.date_entered
     })
+    return map
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stageLogs, myBackendEnquiryIds])
 
-    const firstQtDate = {}
-    myQt.forEach(t => {
-      if (!t.shared_date) return
-      if (!firstQtDate[t.enquiry_id] || new Date(t.shared_date) < new Date(firstQtDate[t.enquiry_id])) {
-        firstQtDate[t.enquiry_id] = t.shared_date
-      }
+  function computeBackendTatInfo(rows, endField, target) {
+    const groups = {}
+    rows.forEach(r => {
+      const key = r.enquiry_id
+      if (!key) return
+      if (!groups[key]) groups[key] = []
+      groups[key].push(r)
     })
-
-    const hrsList = Object.keys(fcApprovedMap)
-      .map(enquiryId => firstQtDate[enquiryId] ? hrsDiff(fcApprovedMap[enquiryId], firstQtDate[enquiryId]) : null)
-      .filter(h => h !== null)
+    const hrsList = Object.keys(groups).map(enquiryId => {
+      const start = backendAssignedMap[enquiryId]
+      if (!start) return null
+      const ends = groups[enquiryId].map(r => r[endField]).filter(Boolean).map(d => new Date(d).getTime())
+      if (!ends.length) return null
+      const end = new Date(Math.min(...ends)).toISOString()
+      return hrsDiff(start, end)
+    }).filter(h => h !== null)
 
     if (hrsList.length === 0) return { avgTat: null, onTimePct: null }
-
-    const onTime = hrsList.filter(h => h <= targets.quotation).length
+    const onTime = hrsList.filter(h => h <= target).length
     const avgTat = hrsList.reduce((s, h) => s + h, 0) / hrsList.length
     const onTimePct = Math.round((onTime / hrsList.length) * 100)
     return { avgTat, onTimePct }
+  }
+
+  const fcTatInfo = useMemo(() => computeBackendTatInfo(myFc, 'client_shared_date', targets.flowchart),
+    [myFc, backendAssignedMap, targets.flowchart]) // eslint-disable-line react-hooks/exhaustive-deps
+  const fcStats = {
+    ...computeAssigneeStats(myFc, 'Client Approved', ['Client Revision Requested'], targets.flowchart, null),
+    ...fcTatInfo,
+  }
+  const qtTatInfo = useMemo(() => {
+    if (!currentUser || !relevantModules.includes('Quotation')) return { avgTat: null, onTimePct: null }
+    return computeBackendTatInfo(myQt, 'shared_date', targets.quotation)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stageLogs, myQt, myBackendEnquiryIds, currentUser, relevantModules, targets.quotation])
+  }, [myQt, backendAssignedMap, currentUser, relevantModules, targets.quotation])
 
   const qtStats = { ...computeAssigneeStats(myQt, 'Sent', ['Revision'], null, null), ...qtTatInfo }
-  const qrStats = computeAssigneeStats(
-    myQr, 'Received', null, targets.questionnaire,
-    { startField: 'created_at', endField: 'received_date', successStatuses: ['Received'], personField: 'logged_by' }
-  )
+  const qrTatInfo = useMemo(() => computeBackendTatInfo(myQr, 'sent_date', targets.questionnaire),
+    [myQr, backendAssignedMap, targets.questionnaire]) // eslint-disable-line react-hooks/exhaustive-deps
+  const qrStats = {
+    ...computeAssigneeStats(myQr, 'Received', null, targets.questionnaire, null),
+    ...qrTatInfo,
+  }
 
   const gaStats = isReviewerRole
     ? computeAdminReviewStats(myGa, 'Approved by Admin', 'Rejected by Admin', selectedUser, targets.adminApproval)

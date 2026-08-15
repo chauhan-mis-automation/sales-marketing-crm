@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabaseClient'
 import { useDateRangeFilter } from '../../lib/useDateRangeFilter'
-import { DEFAULT_TAT_TARGETS, hrsDiff, fmtHrs, parseHrs, buildEnquiryLevelRecords } from '../../lib/tatHelpers'
+import { DEFAULT_TAT_TARGETS, hrsDiff, fmtHrs, parseHrs } from '../../lib/tatHelpers'
 import { formatDateDisplay } from '../../lib/dateHelpers'
 import DateFilterBar from '../../components/DateFilterBar'
 import WorkQueueCard from '../../components/WorkQueueCard'
@@ -58,16 +58,20 @@ function ModuleCard({ icon, name, color, stats }) {
   )
 }
 
-function TatCard({ icon, name, color, target, records, enqMap }) {
+function TatCard({ icon, name, color, target, records, enqMap, navigate }) {
+  const [page, setPage] = useState(0)
+  const PER_PAGE = 3
+
   const completed = records.filter(r => r.hrs !== null)
   const pending = records.filter(r => r.hrs === null)
   const onTime = completed.filter(r => r.hrs <= target)
   const late = completed.filter(r => r.hrs > target)
   const pct = completed.length > 0 ? Math.round((onTime.length / completed.length) * 100) : 0
 
-  const recent = [...records]
-    .sort((a, b) => new Date(b.end || b.start || 0) - new Date(a.end || a.start || 0))
-    .slice(0, 3)
+  const sorted = [...records].sort((a, b) => new Date(b.end || b.start || 0) - new Date(a.end || a.start || 0))
+  const totalPages = Math.max(1, Math.ceil(sorted.length / PER_PAGE))
+  const safePage = Math.min(page, totalPages - 1)
+  const recent = sorted.slice(safePage * PER_PAGE, safePage * PER_PAGE + PER_PAGE)
 
   return (
     <div className="bd-tat-card">
@@ -97,7 +101,12 @@ function TatCard({ icon, name, color, target, records, enqMap }) {
             const dotColor = isPending ? '#888780' : isOnTime ? '#059669' : '#be123c'
             const name = enqMap[r.enquiryId]?.contact_name || enqMap[r.enquiryId]?.company_name || r.enquiryId
             return (
-              <div className="bd-tat-recent-row" key={i}>
+              <div
+                className="bd-tat-recent-row"
+                key={i}
+                onClick={() => navigate?.(`/enquiries/${r.enquiryId}`)}
+                style={{ cursor: navigate ? 'pointer' : 'default' }}
+              >
                 <span className="bd-tat-recent-dot" style={{ background: dotColor }}></span>
                 <div className="bd-tat-recent-info">
                   <div className="bd-tat-recent-id">{r.enquiryId}</div>
@@ -115,6 +124,25 @@ function TatCard({ icon, name, color, target, records, enqMap }) {
           })
         )}
       </div>
+      {sorted.length > PER_PAGE && (
+        <div className="bd-tat-pagination">
+          <button
+            className="bd-tat-page-btn"
+            disabled={safePage === 0}
+            onClick={() => setPage(p => Math.max(0, p - 1))}
+          >
+            ‹
+          </button>
+          <span className="bd-tat-page-info">{safePage + 1} / {totalPages}</span>
+          <button
+            className="bd-tat-page-btn"
+            disabled={safePage >= totalPages - 1}
+            onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+          >
+            ›
+          </button>
+        </div>
+      )}
     </div>
   )
 }
@@ -152,7 +180,7 @@ export default function BackendDashboard({ user }) {
       supabase.from('quotation_versions').select('*'),
       supabase.from('ga_drawing_tasks').select('*'),
       supabase.from('questionnaire_rounds').select('*'),
-      supabase.from('stage_logs').select('*').eq('stage_name', 'Flowchart Approved'),
+      supabase.from('stage_logs').select('*').eq('stage_name', 'Assigned'),
       supabase.from('dropdown_list').select('flowchart, quotation, ga_drawing, questionnaire').order('id', { ascending: true }).limit(1),
     ])
 
@@ -202,44 +230,54 @@ export default function BackendDashboard({ user }) {
   }, [filteredEnquiries])
 
   // ── My TAT Performance ──────────────────────────────────
-  const fcTatRecords = useMemo(() => buildEnquiryLevelRecords(myFc, {
-    startField: 'assigned_date', endField: 'decision_date', successStatuses: ['Client Approved'], personField: 'assigned_to'
-  }), [myFc])
-
-  const gaTatRecords = useMemo(() => buildEnquiryLevelRecords(myGa, {
-    startField: 'assigned_date', endField: 'client_approved_date', successStatuses: ['Client Approved'], personField: 'assigned_to'
-  }), [myGa])
-
-  const qrTatRecords = useMemo(() => buildEnquiryLevelRecords(myQr, {
-    startField: 'created_at', endField: 'received_date', successStatuses: ['Received'], personField: 'logged_by'
-  }), [myQr])
-
-  const qtTatRecords = useMemo(() => {
-    const fcApprovedMap = {}
+  // This measures BACKEND's own turnaround: from the moment the enquiry
+  // was assigned to Backend, until Backend hands off their piece of work —
+  // NOT until the client/designer/admin finishes acting on it downstream.
+  //   Flowchart    → submitted/shared with client (client_shared_date)
+  //   Quotation    → sent to client (shared_date)
+  //   GA Drawing   → assigned to a Designer (assigned_date)
+  //   Questionnaire→ sent to client (sent_date)
+  const backendAssignedMap = useMemo(() => {
+    const map = {}
     stageLogs.forEach(l => {
       if (!myEnquiryIds.has(l.enquiry_id)) return
-      const existing = fcApprovedMap[l.enquiry_id]
-      if (!existing || new Date(l.date_entered) > new Date(existing)) fcApprovedMap[l.enquiry_id] = l.date_entered
-    })
-    const firstQtDate = {}
-    myQt.forEach(t => {
-      if (!t.shared_date) return
-      if (!firstQtDate[t.enquiry_id] || new Date(t.shared_date) < new Date(firstQtDate[t.enquiry_id])) {
-        firstQtDate[t.enquiry_id] = t.shared_date
+      if (l.stage_name !== 'Assigned') return
+      const existing = map[l.enquiry_id]
+      if (!existing || new Date(l.date_entered) < new Date(existing)) {
+        map[l.enquiry_id] = l.date_entered
       }
     })
-    return Object.keys(fcApprovedMap).map(enquiryId => {
-      const start = fcApprovedMap[enquiryId]
-      const end = firstQtDate[enquiryId] || null
+    return map
+  }, [stageLogs, myEnquiryIds])
+
+  function buildBackendTatRecords(rows, endField) {
+    const groups = {}
+    ;(rows || []).forEach(r => {
+      const key = r.enquiry_id
+      if (!key) return
+      if (!groups[key]) groups[key] = []
+      groups[key].push(r)
+    })
+
+    return Object.keys(groups).map(enquiryId => {
+      const group = groups[enquiryId]
+      const start = backendAssignedMap[enquiryId] || null
+      const ends = group.map(r => r[endField]).filter(Boolean).map(d => new Date(d).getTime())
+      const end = ends.length ? new Date(Math.min(...ends)).toISOString() : null
       return {
         enquiryId,
         person: enqMap[enquiryId]?.assign_to_backend,
         start,
         end,
-        hrs: end ? hrsDiff(start, end) : null,
+        hrs: (start && end) ? hrsDiff(start, end) : null,
       }
     })
-  }, [stageLogs, myQt, myEnquiryIds, enqMap])
+  }
+
+  const fcTatRecords = useMemo(() => buildBackendTatRecords(myFc, 'client_shared_date'), [myFc, backendAssignedMap, enqMap])
+  const gaTatRecords = useMemo(() => buildBackendTatRecords(myGa, 'assigned_date'), [myGa, backendAssignedMap, enqMap])
+  const qrTatRecords = useMemo(() => buildBackendTatRecords(myQr, 'sent_date'), [myQr, backendAssignedMap, enqMap])
+  const qtTatRecords = useMemo(() => buildBackendTatRecords(myQt, 'shared_date'), [myQt, backendAssignedMap, enqMap])
 
   if (loading) {
     return <div className="sd-loading"><i className="fas fa-spinner fa-spin"></i> Loading dashboard…</div>
@@ -325,10 +363,10 @@ export default function BackendDashboard({ user }) {
           <button className="quick-btn" onClick={loadData}><i className="fas fa-sync"></i> Refresh</button>
         </div>
         <div className="bd-tat-grid">
-          <TatCard icon="📁" name="Flowchart" color="#6d28d9" target={targets.flowchart} records={fcTatRecords} enqMap={enqMap} />
-          <TatCard icon="📐" name="GA Drawing" color="#0d9488" target={targets.gaDrawing} records={gaTatRecords} enqMap={enqMap} />
-          <TatCard icon="💰" name="Quotation" color="#0369a1" target={targets.quotation} records={qtTatRecords} enqMap={enqMap} />
-          <TatCard icon="📄" name="Questionnaire" color="#b45309" target={targets.questionnaire} records={qrTatRecords} enqMap={enqMap} />
+          <TatCard icon="📁" name="Flowchart" color="#6d28d9" target={targets.flowchart} records={fcTatRecords} enqMap={enqMap} navigate={navigate} />
+          <TatCard icon="📐" name="GA Drawing" color="#0d9488" target={targets.gaDrawing} records={gaTatRecords} enqMap={enqMap} navigate={navigate} />
+          <TatCard icon="💰" name="Quotation" color="#0369a1" target={targets.quotation} records={qtTatRecords} enqMap={enqMap} navigate={navigate} />
+          <TatCard icon="📄" name="Questionnaire" color="#b45309" target={targets.questionnaire} records={qrTatRecords} enqMap={enqMap} navigate={navigate} />
         </div>
       </div>
     </div>

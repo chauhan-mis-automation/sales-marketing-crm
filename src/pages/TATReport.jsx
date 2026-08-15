@@ -36,7 +36,7 @@ export default function TATReport() {
         supabase.from('purchase_orders').select('*'),
         supabase.from('work_orders').select('*'),
         supabase.from('questionnaire_rounds').select('*'),
-        supabase.from('stage_logs').select('*').eq('stage_name', 'Flowchart Approved'),
+        supabase.from('stage_logs').select('*').eq('stage_name', 'Assigned'),
         supabase.from('enquiries').select('enquiry_id, company_name, project_name, assign_to_backend'),
         supabase.from('dropdown_list').select('flowchart, quotation, ga_drawing, questionnaire, tat_admin_approval, purchase_orders, work_order').order('id', { ascending: true }).limit(1),
       ])
@@ -55,35 +55,46 @@ export default function TATReport() {
         workOrder: parseHrs(settingsRow.work_order, DEFAULT_TAT_TARGETS.workOrder),
       }
 
-      // latest "Flowchart Approved" stage_log timestamp per enquiry
-      const fcApprovedMap = {}
+      // latest "Assigned" stage_log timestamp per enquiry — this is when Backend
+      // received the enquiry, used as the TAT start-point for Backend's own
+      // Flowchart / Quotation / Questionnaire turnaround (GA Drawing, PO, Work
+      // Order are tracked separately below, attributed to Designer/Admin).
+      const backendAssignedMap = {}
       ;(stageLogs || []).forEach(l => {
-        const existing = fcApprovedMap[l.enquiry_id]
-        if (!existing || new Date(l.date_entered) > new Date(existing)) {
-          fcApprovedMap[l.enquiry_id] = l.date_entered
+        const existing = backendAssignedMap[l.enquiry_id]
+        if (!existing || new Date(l.date_entered) < new Date(existing)) {
+          backendAssignedMap[l.enquiry_id] = l.date_entered
         }
       })
 
-      // ── Flowchart: Assigned (first version) → Client Approved (revisions don't reset the clock) ──
-      const fcRecords = buildEnquiryLevelRecords(fcRows, {
-        startField: 'assigned_date',
-        endField: 'decision_date',
-        successStatuses: ['Client Approved'],
-        personField: 'assigned_to',
-      }).map(r => ({ ...r, company: enqMap[r.enquiryId]?.company_name, person: enqMap[r.enquiryId]?.assign_to_backend || r.person }))
-      const qtRecords = (qtRows || []).map(t => {
-        const fcTime = fcApprovedMap[t.enquiry_id]
-        return {
-          person: enqMap[t.enquiry_id]?.assign_to_backend,
-          enquiryId: t.enquiry_id,
-          company: enqMap[t.enquiry_id]?.company_name,
-          version: t.version,
-          start: fcTime,
-          end: t.shared_date,
-          hrs: fcTime ? hrsDiff(fcTime, t.shared_date) : null,
-          status: t.status,
-        }
-      })
+      function buildBackendRecords(rows, endField) {
+        const groups = {}
+        ;(rows || []).forEach(r => {
+          const key = r.enquiry_id
+          if (!key) return
+          if (!groups[key]) groups[key] = []
+          groups[key].push(r)
+        })
+        return Object.keys(groups).map(enquiryId => {
+          const group = groups[enquiryId]
+          const start = backendAssignedMap[enquiryId] || null
+          const ends = group.map(r => r[endField]).filter(Boolean).map(d => new Date(d).getTime())
+          const end = ends.length ? new Date(Math.min(...ends)).toISOString() : null
+          return {
+            enquiryId,
+            company: enqMap[enquiryId]?.company_name,
+            person: enqMap[enquiryId]?.assign_to_backend,
+            start,
+            end,
+            hrs: (start && end) ? hrsDiff(start, end) : null,
+            status: group[group.length - 1].status,
+          }
+        })
+      }
+
+      // ── Flowchart: Assigned to Backend → Shared with Client ──
+      const fcRecords = buildBackendRecords(fcRows, 'client_shared_date')
+      const qtRecords = buildBackendRecords(qtRows, 'shared_date')
 
       // ── GA Drawing: Designer TAT runs from first assignment until Admin
       // finally APPROVES it — rejections/revisions do not reset the clock.
@@ -148,22 +159,13 @@ export default function TATReport() {
           status: t.status,
         }))
 
-      // ── Questionnaire: Sent → Received ──
-      const qrRecords = (qrRows || []).map(t => ({
-        person: enqMap[t.enquiry_id]?.assign_to_backend,
-        enquiryId: t.enquiry_id,
-        company: enqMap[t.enquiry_id]?.company_name,
-        version: null,
-        start: t.created_at,
-        end: t.received_date || null,
-        hrs: t.received_date ? hrsDiff(t.created_at, t.received_date) : null,
-        status: t.status,
-      }))
+      // ── Questionnaire: Assigned to Backend → Sent to Client ──
+      const qrRecords = buildBackendRecords(qrRows, 'sent_date')
 
       setModules({
-        flowchart: { records: fcRecords, stats: buildModuleStats(fcRecords, targets.flowchart), target: targets.flowchart, label: '🗂️ Flowchart', sub: 'Assigned → Client Approved (revisions don\'t reset clock)' },
-        quotation: { records: qtRecords, stats: buildModuleStats(qtRecords, targets.quotation), target: targets.quotation, label: '💰 Quotation', sub: 'Flowchart Approved → Quotation Sent' },
-        questionnaire: { records: qrRecords, stats: buildModuleStats(qrRecords, targets.questionnaire), target: targets.questionnaire, label: '📄 Questionnaire', sub: 'Sent → Received' },
+        flowchart: { records: fcRecords, stats: buildModuleStats(fcRecords, targets.flowchart), target: targets.flowchart, label: '🗂️ Flowchart', sub: 'Assigned to Backend → Shared with Client' },
+        quotation: { records: qtRecords, stats: buildModuleStats(qtRecords, targets.quotation), target: targets.quotation, label: '💰 Quotation', sub: 'Assigned to Backend → Quotation Sent' },
+        questionnaire: { records: qrRecords, stats: buildModuleStats(qrRecords, targets.questionnaire), target: targets.questionnaire, label: '📄 Questionnaire', sub: 'Assigned to Backend → Sent to Client' },
         gaDesigner: { records: gaDesignerRecords, stats: buildModuleStats(gaDesignerRecords, targets.gaDrawing), target: targets.gaDrawing, label: '📐 GA Drawing (Designer)', sub: 'Assigned → Admin Approved (revisions don\'t reset clock)' },
         gaAdmin: { records: gaAdminRecords, stats: buildModuleStats(gaAdminRecords, targets.adminApproval), target: targets.adminApproval, label: '👑 GA Drawing (Admin Review)', sub: 'Submission → Admin Review (per attempt)' },
         gaTotal: { records: gaTotalRecords, stats: buildModuleStats(gaTotalRecords, targets.gaDrawing), target: targets.gaDrawing, label: '📐 GA Drawing (Total)', sub: 'Assigned → Client Approved (revisions don\'t reset clock)' },
