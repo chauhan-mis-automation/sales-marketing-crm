@@ -62,10 +62,15 @@ export default function GADrawingAdminReviewModal({ enquiry, latestTask, onClose
           .eq('role', 'followup')
           .eq('active', true)
 
-        if (followupUsers && followupUsers.length > 0) {
+        const notifyRecipients = (followupUsers || []).map(u => u.name)
+        if (enquiry.assign_to_backend && !notifyRecipients.includes(enquiry.assign_to_backend)) {
+          notifyRecipients.push(enquiry.assign_to_backend)
+        }
+
+        if (notifyRecipients.length > 0) {
           await supabase.from('notifications').insert(
-            followupUsers.map(u => ({
-              recipient_name: u.name,
+            notifyRecipients.map(name => ({
+              recipient_name: name,
               enquiry_id: enquiry.enquiry_id,
               title: '📐 GA Drawing Approved — Share with Client Now!',
               message: `Admin (${user?.name}) approved the GA Drawing for enquiry ${enquiry.enquiry_id} (${enquiry.company_name}). Please open GA Drawing Action → select "Share Drawing with Client" and submit.`,

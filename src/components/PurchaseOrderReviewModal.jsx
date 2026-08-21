@@ -157,17 +157,6 @@ export default function PurchaseOrderReviewModal({ enquiry, latestPO, isAuthoriz
         />
       </div>
 
-      {!isAuthorizedReview && (
-        <div className="modal-form-group">
-          <label>Reassign to Authorized Person (optional)</label>
-          <select value={reassignTo} onChange={e => setReassignTo(e.target.value)}>
-            <option value="">-- Select Person --</option>
-            {authorizedPerson.map(p => <option key={p} value={p}>{p}</option>)}
-          </select>
-          <div className="modal-helper">If selected, that person will be notified to approve/reject the PO.</div>
-        </div>
-      )}
-
       <div className="modal-form-group">
         <label>Select Action *</label>
         <select value={action} onChange={e => setAction(e.target.value)}>
@@ -179,6 +168,17 @@ export default function PurchaseOrderReviewModal({ enquiry, latestPO, isAuthoriz
           <option value="reject">❌ Reject PO</option>
         </select>
       </div>
+
+      {!isAuthorizedReview && action === 'reassign' && (
+        <div className="modal-form-group">
+          <label>Reassign to Authorized Person *</label>
+          <select value={reassignTo} onChange={e => setReassignTo(e.target.value)}>
+            <option value="">-- Select Person --</option>
+            {authorizedPerson.map(p => <option key={p} value={p}>{p}</option>)}
+          </select>
+          <div className="modal-helper">That person will be notified to approve/reject the PO.</div>
+        </div>
+      )}
     </Modal>
   )
 }

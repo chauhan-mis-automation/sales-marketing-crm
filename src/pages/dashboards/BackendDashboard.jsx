@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabaseClient'
 import { useDateRangeFilter } from '../../lib/useDateRangeFilter'
 import { DEFAULT_TAT_TARGETS, hrsDiff, fmtHrs, parseHrs } from '../../lib/tatHelpers'
 import { formatDateDisplay } from '../../lib/dateHelpers'
+import { latestPerEnquiry } from '../../lib/queueHelpers'
 import DateFilterBar from '../../components/DateFilterBar'
 import WorkQueueCard from '../../components/WorkQueueCard'
 import '../dashboards/StandardDashboard.css'
@@ -11,10 +12,10 @@ import './BackendDashboard.css'
 
 // current_stage values that mean "backend needs to do something right now"
 const ACTION_STAGES = {
-  'Assigned': { label: 'Create Flowchart', icon: '🗂', color: '#6d28d9' },
-  'Client Want Flowchart Revision': { label: 'Revise Flowchart', icon: '🔄', color: '#be123c' },
-  'Received Confirmation on Flow Chart': { label: 'Send Quotation', icon: '💰', color: '#0369a1' },
-  'Client Want Quotation Revision': { label: 'Revise Quotation', icon: '🔄', color: '#be123c' },
+  'Assigned': { label: 'Create Flowchart', detail: 'New enquiry assigned — create and share Flowchart', icon: '🗂', color: '#6d28d9' },
+  'Client Want Flowchart Revision': { label: 'Revise Flowchart', detail: 'Client requested changes — resend revised Flowchart', icon: '🔄', color: '#be123c' },
+  'Received Confirmation on Flow Chart': { label: 'Send Quotation', detail: 'Flowchart approved by client — send Quotation', icon: '💰', color: '#0369a1' },
+  'Client Want Quotation Revision': { label: 'Revise Quotation', detail: 'Client requested changes — resend revised Quotation', icon: '🔄', color: '#be123c' },
 }
 
 function computeModuleStats(rows, approvedStatus, awaitingStatus, revisedStatus) {
@@ -180,8 +181,8 @@ export default function BackendDashboard({ user }) {
       supabase.from('quotation_versions').select('*'),
       supabase.from('ga_drawing_tasks').select('*'),
       supabase.from('questionnaire_rounds').select('*'),
-      supabase.from('stage_logs').select('*').eq('stage_name', 'Assigned'),
-      supabase.from('dropdown_list').select('flowchart, quotation, ga_drawing, questionnaire').order('id', { ascending: true }).limit(1),
+      supabase.from('stage_logs').select('*').in('stage_name', ['Assigned', 'Client Wants Changes']),
+      supabase.from('dropdown_list').select('flowchart, quotation, ga_drawing, questionnaire, revise_flowchart, ga_drawing_send').order('id', { ascending: true }).limit(1),
     ])
 
     setEnquiries(enqRows || [])
@@ -197,6 +198,8 @@ export default function BackendDashboard({ user }) {
       quotation: parseHrs(settingsRow.quotation, DEFAULT_TAT_TARGETS.quotation),
       gaDrawing: parseHrs(settingsRow.ga_drawing, DEFAULT_TAT_TARGETS.gaDrawing),
       questionnaire: parseHrs(settingsRow.questionnaire, DEFAULT_TAT_TARGETS.questionnaire),
+      reviseFlowchart: parseHrs(settingsRow.revise_flowchart, 8),
+      gaDrawingSend: parseHrs(settingsRow.ga_drawing_send, 2),
     })
 
     setLoading(false)
@@ -229,6 +232,60 @@ export default function BackendDashboard({ user }) {
       .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
   }, [filteredEnquiries])
 
+  // Questionnaire "sent — awaiting client response" now lives ONLY here
+  // (Backend's own queue) — Admin/Followup no longer see this as an
+  // actionable item on their dashboards.
+  const questionnaireItems = useMemo(() => {
+    return latestPerEnquiry(myQr)
+      .filter(t => t.status === 'Sent' && enqMap[t.enquiry_id]?.status === 'Active')
+      .map(t => ({
+        enquiryId: t.enquiry_id,
+        company: enqMap[t.enquiry_id]?.company_name,
+        date: t.sent_date,
+        icon: '📄',
+        label: 'Questionnaire',
+        detail: 'Collect Questionnaire Response',
+        color: '#b45309',
+      }))
+  }, [myQr, enqMap])
+
+  // GA Drawing "Approved by Admin -> needs sharing with client" — SHARED
+  // responsibility: this appears in BOTH Backend's and Follow-up's Work
+  // Queue (whichever is free does it), but the TAT is always counted as
+  // Backend's (see reviseFcTatRecords-style tracking / GA Drawing TAT card).
+  const gaShareItems = useMemo(() => {
+    return latestPerEnquiry(myGa)
+      .filter(t => t.status === 'Approved by Admin' && enqMap[t.enquiry_id]?.status === 'Active')
+      .map(t => ({
+        enquiryId: t.enquiry_id,
+        company: enqMap[t.enquiry_id]?.company_name,
+        date: t.admin_review_date,
+        icon: '📐',
+        label: 'GA Drawing',
+        detail: 'Share GA Drawing with client',
+        color: '#0d9488',
+      }))
+  }, [myGa, enqMap])
+
+  const combinedWorkQueue = useMemo(() => {
+    const today = new Date().toISOString().slice(0, 10)
+    const stageItems = actionNeeded.map(e => {
+      const a = ACTION_STAGES[e.current_stage]
+      return {
+        enquiryId: e.enquiry_id,
+        company: e.company_name,
+        date: e.date,
+        icon: a.icon,
+        label: a.label,
+        detail: a.detail,
+        color: a.color,
+      }
+    })
+    return [...stageItems, ...questionnaireItems, ...gaShareItems]
+      .map(item => ({ ...item, isOverdue: item.date && item.date.slice(0, 10) < today }))
+      .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
+  }, [actionNeeded, questionnaireItems, gaShareItems])
+
   // ── My TAT Performance ──────────────────────────────────
   // This measures BACKEND's own turnaround: from the moment the enquiry
   // was assigned to Backend, until Backend hands off their piece of work —
@@ -250,7 +307,31 @@ export default function BackendDashboard({ user }) {
     return map
   }, [stageLogs, myEnquiryIds])
 
-  function buildBackendTatRecords(rows, endField) {
+  // Latest Questionnaire round per enquiry — used to cascade the TAT
+  // starting point for Flowchart/Quotation (see getCascadingStart below).
+  const qrByEnquiryMap = useMemo(() => {
+    const map = {}
+    myQr.forEach(t => {
+      const existing = map[t.enquiry_id]
+      if (!existing || new Date(t.sent_date) > new Date(existing.sent_date)) {
+        map[t.enquiry_id] = t
+      }
+    })
+    return map
+  }, [myQr])
+
+  // Flowchart / Quotation ka TAT start-point ek "cascading" rule follow karta
+  // hai (client se pehle confirmed pehla checkpoint use hota hai):
+  //   1. Agar Questionnaire bheji thi AUR Received ho chuki hai -> Received date se
+  //   2. Agar Questionnaire bheji thi lekin abhi Received nahi hui -> Sent date se
+  //   3. Agar Questionnaire kabhi bheji hi nahi -> seedha Assigned date se
+  function getCascadingStart(enquiryId) {
+    const qr = qrByEnquiryMap[enquiryId]
+    if (qr) return qr.received_date || qr.sent_date
+    return backendAssignedMap[enquiryId] || null
+  }
+
+  function buildBackendTatRecords(rows, endField, useCascadingStart = false) {
     const groups = {}
     ;(rows || []).forEach(r => {
       const key = r.enquiry_id
@@ -261,7 +342,7 @@ export default function BackendDashboard({ user }) {
 
     return Object.keys(groups).map(enquiryId => {
       const group = groups[enquiryId]
-      const start = backendAssignedMap[enquiryId] || null
+      const start = useCascadingStart ? getCascadingStart(enquiryId) : (backendAssignedMap[enquiryId] || null)
       const ends = group.map(r => r[endField]).filter(Boolean).map(d => new Date(d).getTime())
       const end = ends.length ? new Date(Math.min(...ends)).toISOString() : null
       return {
@@ -274,10 +355,72 @@ export default function BackendDashboard({ user }) {
     })
   }
 
-  const fcTatRecords = useMemo(() => buildBackendTatRecords(myFc, 'client_shared_date'), [myFc, backendAssignedMap, enqMap])
+  const fcTatRecords = useMemo(() => buildBackendTatRecords(myFc, 'client_shared_date', true), [myFc, backendAssignedMap, qrByEnquiryMap, enqMap])
   const gaTatRecords = useMemo(() => buildBackendTatRecords(myGa, 'assigned_date'), [myGa, backendAssignedMap, enqMap])
   const qrTatRecords = useMemo(() => buildBackendTatRecords(myQr, 'sent_date'), [myQr, backendAssignedMap, enqMap])
-  const qtTatRecords = useMemo(() => buildBackendTatRecords(myQt, 'shared_date'), [myQt, backendAssignedMap, enqMap])
+  const qtTatRecords = useMemo(() => buildBackendTatRecords(myQt, 'shared_date', true), [myQt, backendAssignedMap, qrByEnquiryMap, enqMap])
+
+  // ── Revise Flowchart TAT (naya) ──────────────────────────
+  // START: Client ne "Wants Changes" bola (stage_logs mein latest entry)
+  // END: Uske BAAD jo agla Flowchart version Client ko Shared hua
+  const revisionRequestedMap = useMemo(() => {
+    const map = {}
+    stageLogs.forEach(l => {
+      if (!myEnquiryIds.has(l.enquiry_id)) return
+      if (l.stage_name !== 'Client Wants Changes') return
+      const existing = map[l.enquiry_id]
+      if (!existing || new Date(l.date_entered) > new Date(existing)) {
+        map[l.enquiry_id] = l.date_entered
+      }
+    })
+    return map
+  }, [stageLogs, myEnquiryIds])
+
+  const reviseFcTatRecords = useMemo(() => {
+    return Object.keys(revisionRequestedMap).map(enquiryId => {
+      const start = revisionRequestedMap[enquiryId]
+      const laterShares = myFc
+        .filter(t => t.enquiry_id === enquiryId && t.client_shared_date && new Date(t.client_shared_date) > new Date(start))
+        .map(t => new Date(t.client_shared_date).getTime())
+      const end = laterShares.length ? new Date(Math.min(...laterShares)).toISOString() : null
+      return {
+        enquiryId,
+        person: enqMap[enquiryId]?.assign_to_backend,
+        start,
+        end,
+        hrs: end ? hrsDiff(start, end) : null,
+      }
+    })
+  }, [revisionRequestedMap, myFc, enqMap])
+
+  // ── GA Drawing "send after admin approval" TAT (naya) ────
+  // START: Admin ne GA Drawing Approve kiya (admin_review_date)
+  // END: Backend/Follow-up ne Client ko Share kiya (client_shared_date)
+  // Shared responsibility hai (koi bhi share kar sakta hai), lekin TAT
+  // hamesha Backend ke naam count hota hai (Section 12.3/12.4).
+  const gaShareTatRecords = useMemo(() => {
+    const groups = {}
+    myGa.forEach(t => {
+      if (!t.admin_review_date) return
+      const key = t.enquiry_id
+      if (!groups[key]) groups[key] = []
+      groups[key].push(t)
+    })
+    return Object.keys(groups).map(enquiryId => {
+      // Sabse pehla "Approved" task jiska admin_review_date hai
+      const group = groups[enquiryId].sort((a, b) => new Date(a.admin_review_date) - new Date(b.admin_review_date))
+      const start = group[0].admin_review_date
+      const shares = group.filter(t => t.client_shared_date).map(t => new Date(t.client_shared_date).getTime())
+      const end = shares.length ? new Date(Math.min(...shares)).toISOString() : null
+      return {
+        enquiryId,
+        person: enqMap[enquiryId]?.assign_to_backend,
+        start,
+        end,
+        hrs: end ? hrsDiff(start, end) : null,
+      }
+    })
+  }, [myGa, enqMap])
 
   if (loading) {
     return <div className="sd-loading"><i className="fas fa-spinner fa-spin"></i> Loading dashboard…</div>
@@ -324,33 +467,35 @@ export default function BackendDashboard({ user }) {
       </div>
 
       {/* ── Today's Work Queue ─────────────────────────────── */}
-      <WorkQueueCard count={actionNeeded.length}>
+      <WorkQueueCard count={combinedWorkQueue.length}>
         <div className="table-wrap">
           <table className="dt">
             <thead>
-              <tr><th>Action</th><th>Enquiry ID</th><th>Company</th><th>Date</th><th></th></tr>
+              <tr><th>Action</th><th>Enquiry ID</th><th>Company</th><th>Detail</th><th>Date</th><th></th></tr>
             </thead>
             <tbody>
-              {actionNeeded.map(e => {
-                const a = ACTION_STAGES[e.current_stage]
-                return (
-                  <tr key={e.id} onClick={() => navigate(`/enquiries/${e.enquiry_id}`)}>
-                    <td>
-                      <span className="badge" style={{ background: `${a.color}18`, color: a.color }}>
-                        {a.icon} {a.label}
-                      </span>
-                    </td>
-                    <td><span style={{ fontFamily: 'var(--mono)', color: 'var(--green)', fontSize: 12, fontWeight: 700 }}>{e.enquiry_id}</span></td>
-                    <td><strong>{e.company_name || '—'}</strong></td>
-                    <td><span style={{ fontFamily: 'var(--mono)', fontSize: 11.5, color: 'var(--muted)' }}>{formatDateDisplay(e.date)}</span></td>
-                    <td>
-                      <button className="quick-btn" onClick={(ev) => { ev.stopPropagation(); navigate(`/enquiries/${e.enquiry_id}`) }}>
-                        Open →
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
+              {combinedWorkQueue.map((item, i) => (
+                <tr
+                  key={`${item.enquiryId}-${i}`}
+                  className={item.isOverdue ? 'wq-row-overdue' : ''}
+                  onClick={() => navigate(`/enquiries/${item.enquiryId}`)}
+                >
+                  <td>
+                    <span className="badge" style={{ background: `${item.color}18`, color: item.color }}>
+                      {item.icon} {item.label}
+                    </span>
+                  </td>
+                  <td><span style={{ fontFamily: 'var(--mono)', color: 'var(--green)', fontSize: 12, fontWeight: 700 }}>{item.enquiryId}</span></td>
+                  <td><strong>{item.company || '—'}</strong></td>
+                  <td><span style={{ fontSize: 12.5, color: 'var(--text2)' }}>{item.detail || '—'}</span></td>
+                  <td><span style={{ fontFamily: 'var(--mono)', fontSize: 11.5, fontWeight: item.isOverdue ? 700 : 400, color: item.isOverdue ? 'var(--rose)' : 'var(--muted)' }}>{formatDateDisplay(item.date)}</span></td>
+                  <td>
+                    <button className="quick-btn" onClick={(ev) => { ev.stopPropagation(); navigate(`/enquiries/${item.enquiryId}`) }}>
+                      Open →
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -364,7 +509,9 @@ export default function BackendDashboard({ user }) {
         </div>
         <div className="bd-tat-grid">
           <TatCard icon="📁" name="Flowchart" color="#6d28d9" target={targets.flowchart} records={fcTatRecords} enqMap={enqMap} navigate={navigate} />
+          <TatCard icon="🔄" name="Revise Flowchart" color="#be123c" target={targets.reviseFlowchart} records={reviseFcTatRecords} enqMap={enqMap} navigate={navigate} />
           <TatCard icon="📐" name="GA Drawing" color="#0d9488" target={targets.gaDrawing} records={gaTatRecords} enqMap={enqMap} navigate={navigate} />
+          <TatCard icon="📤" name="Share GA Drawing" color="#0891b2" target={targets.gaDrawingSend} records={gaShareTatRecords} enqMap={enqMap} navigate={navigate} />
           <TatCard icon="💰" name="Quotation" color="#0369a1" target={targets.quotation} records={qtTatRecords} enqMap={enqMap} navigate={navigate} />
           <TatCard icon="📄" name="Questionnaire" color="#b45309" target={targets.questionnaire} records={qrTatRecords} enqMap={enqMap} navigate={navigate} />
         </div>

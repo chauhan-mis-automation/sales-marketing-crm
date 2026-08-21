@@ -336,7 +336,7 @@ export default function EnquiryDetail() {
     const role = (user?.role || '').toLowerCase().trim()
     const latestTask = flowchartTasks[0] // sabse recent task (already desc order mein aata hai)
 
-    const isFollowupSide = role === 'followup' || role === 'admin' || role === 'superadmin'
+    const isFollowupSide = role === 'followup' || role === 'admin' || role === 'superadmin' || role === 'backend'
 
     if (isFollowupSide && latestTask && latestTask.status === 'Shared with Client') {
       // Client ka decision lena hai (Approve / Wants Changes)
@@ -373,14 +373,18 @@ export default function EnquiryDetail() {
       return
     }
 
-    if (role === 'followup') {
+    const canDecideGA = role === 'followup' || role === 'backend'
+    if (canDecideGA) {
       if (latestGA && (latestGA.status === 'Approved by Admin' || latestGA.status === 'Shared with Client')) {
         setSelectedGATask(latestGA)
         setShowGAClientActionModal(true)
         return
       }
-      alert('No GA Drawing pending your review right now.')
-      return
+      if (role === 'followup') {
+        alert('No GA Drawing pending your review right now.')
+        return
+      }
+      // Backend, no pending decision -> fall through to assign-new-task below
     }
 
     // Backend (ya admin jab koi pending review na ho) → naya assign karo
@@ -1206,6 +1210,7 @@ export default function EnquiryDetail() {
         <QuotationModal
           enquiry={enquiry}
           existingQuotationsCount={quotations.length}
+          flowchartTasks={flowchartTasks}
           onClose={() => setShowQuotationModal(false)}
           onSaved={loadDetail}
         />

@@ -54,6 +54,25 @@ export default function ReceiveQuestionnaireModal({ enquiry, pendingQuestion, on
         logged_by: user?.name || ''
       })
 
+      // Followup team ke sab active users ko notification bhejo
+      const { data: followupUsers } = await supabase
+        .from('users')
+        .select('name')
+        .eq('role', 'followup')
+        .eq('active', true)
+
+      if (followupUsers && followupUsers.length > 0) {
+        await supabase.from('notifications').insert(
+          followupUsers.map(u => ({
+            recipient_name: u.name,
+            enquiry_id: enquiry.enquiry_id,
+            title: '📋 Questionnaire Received',
+            message: `Client's response received for enquiry ${enquiry.enquiry_id} (${enquiry.company_name}).`,
+            type: 'questionnaire_received'
+          }))
+        )
+      }
+
       onSaved()
       onClose()
     } catch (err) {

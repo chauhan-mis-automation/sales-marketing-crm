@@ -67,7 +67,26 @@ export default function TATReport() {
         }
       })
 
-      function buildBackendRecords(rows, endField) {
+      // Latest Questionnaire round per enquiry — used to cascade the TAT
+      // starting point for Flowchart/Quotation:
+      //   1. Questionnaire Received -> use that date
+      //   2. Questionnaire Sent but not yet Received -> use Sent date
+      //   3. Questionnaire never sent -> fall back to Assigned date
+      const qrByEnquiryMap = {}
+      ;(qrRows || []).forEach(t => {
+        const existing = qrByEnquiryMap[t.enquiry_id]
+        if (!existing || new Date(t.sent_date) > new Date(existing.sent_date)) {
+          qrByEnquiryMap[t.enquiry_id] = t
+        }
+      })
+
+      function getCascadingStart(enquiryId) {
+        const qr = qrByEnquiryMap[enquiryId]
+        if (qr) return qr.received_date || qr.sent_date
+        return backendAssignedMap[enquiryId] || null
+      }
+
+      function buildBackendRecords(rows, endField, useCascadingStart = false) {
         const groups = {}
         ;(rows || []).forEach(r => {
           const key = r.enquiry_id
@@ -77,7 +96,7 @@ export default function TATReport() {
         })
         return Object.keys(groups).map(enquiryId => {
           const group = groups[enquiryId]
-          const start = backendAssignedMap[enquiryId] || null
+          const start = useCascadingStart ? getCascadingStart(enquiryId) : (backendAssignedMap[enquiryId] || null)
           const ends = group.map(r => r[endField]).filter(Boolean).map(d => new Date(d).getTime())
           const end = ends.length ? new Date(Math.min(...ends)).toISOString() : null
           return {
@@ -93,8 +112,8 @@ export default function TATReport() {
       }
 
       // ── Flowchart: Assigned to Backend → Shared with Client ──
-      const fcRecords = buildBackendRecords(fcRows, 'client_shared_date')
-      const qtRecords = buildBackendRecords(qtRows, 'shared_date')
+      const fcRecords = buildBackendRecords(fcRows, 'client_shared_date', true)
+      const qtRecords = buildBackendRecords(qtRows, 'shared_date', true)
 
       // ── GA Drawing: Designer TAT runs from first assignment until Admin
       // finally APPROVES it — rejections/revisions do not reset the clock.

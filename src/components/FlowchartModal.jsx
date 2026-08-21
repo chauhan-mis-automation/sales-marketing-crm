@@ -59,8 +59,8 @@ export default function FlowchartModal({ enquiry, existingTasksCount, isRevision
       })
       if (insertError) throw insertError
 
-      // Next follow-up date: 6 working days baad, Sunday skip karke
-      const nextFollowupDate = formatDateISO(addBusinessDaysExcludingSunday(new Date(), 6))
+      // Next follow-up date: 3 working days baad, Sunday skip karke
+      const nextFollowupDate = formatDateISO(addBusinessDaysExcludingSunday(new Date(), 3))
 
       await supabase
         .from('enquiries')

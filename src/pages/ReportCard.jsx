@@ -266,7 +266,7 @@ export default function ReportCard() {
 
   const myQr = useMemo(() => {
     if (!currentUser || !relevantModules.includes('Questionnaire')) return []
-    return qrTasks.filter(t => myBackendEnquiryIds.has(t.enquiry_id) && inDateRange(t.created_at) && matchesEnquiry(t.enquiry_id))
+    return qrTasks.filter(t => myBackendEnquiryIds.has(t.enquiry_id) && inDateRange(t.sent_date) && matchesEnquiry(t.enquiry_id))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qrTasks, myBackendEnquiryIds, currentUser, filter.fromDate, filter.toDate, selectedEnquiry, relevantModules])
 
@@ -276,7 +276,7 @@ export default function ReportCard() {
     const counters = {}
     const map = {}
     ;[...myQr]
-      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+      .sort((a, b) => new Date(a.sent_date) - new Date(b.sent_date))
       .forEach(r => {
         counters[r.enquiry_id] = (counters[r.enquiry_id] || 0) + 1
         map[r.id] = `V${counters[r.enquiry_id]}`
@@ -318,7 +318,25 @@ export default function ReportCard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stageLogs, myBackendEnquiryIds])
 
-  function computeBackendTatInfo(rows, endField, target) {
+  // Latest Questionnaire round per enquiry — cascades the Flowchart/Quotation
+  // TAT start-point: Received date if received, else Sent date, else fall
+  // back to plain Assigned date (backendAssignedMap).
+  const qrByEnquiryMap = useMemo(() => {
+    const map = {}
+    myQr.forEach(t => {
+      const existing = map[t.enquiry_id]
+      if (!existing || new Date(t.sent_date) > new Date(existing.sent_date)) map[t.enquiry_id] = t
+    })
+    return map
+  }, [myQr])
+
+  function getCascadingStart(enquiryId) {
+    const qr = qrByEnquiryMap[enquiryId]
+    if (qr) return qr.received_date || qr.sent_date
+    return backendAssignedMap[enquiryId] || null
+  }
+
+  function computeBackendTatInfo(rows, endField, target, useCascadingStart = false) {
     const groups = {}
     rows.forEach(r => {
       const key = r.enquiry_id
@@ -327,7 +345,7 @@ export default function ReportCard() {
       groups[key].push(r)
     })
     const hrsList = Object.keys(groups).map(enquiryId => {
-      const start = backendAssignedMap[enquiryId]
+      const start = useCascadingStart ? getCascadingStart(enquiryId) : backendAssignedMap[enquiryId]
       if (!start) return null
       const ends = groups[enquiryId].map(r => r[endField]).filter(Boolean).map(d => new Date(d).getTime())
       if (!ends.length) return null
@@ -342,17 +360,17 @@ export default function ReportCard() {
     return { avgTat, onTimePct }
   }
 
-  const fcTatInfo = useMemo(() => computeBackendTatInfo(myFc, 'client_shared_date', targets.flowchart),
-    [myFc, backendAssignedMap, targets.flowchart]) // eslint-disable-line react-hooks/exhaustive-deps
+  const fcTatInfo = useMemo(() => computeBackendTatInfo(myFc, 'client_shared_date', targets.flowchart, true),
+    [myFc, backendAssignedMap, qrByEnquiryMap, targets.flowchart]) // eslint-disable-line react-hooks/exhaustive-deps
   const fcStats = {
     ...computeAssigneeStats(myFc, 'Client Approved', ['Client Revision Requested'], targets.flowchart, null),
     ...fcTatInfo,
   }
   const qtTatInfo = useMemo(() => {
     if (!currentUser || !relevantModules.includes('Quotation')) return { avgTat: null, onTimePct: null }
-    return computeBackendTatInfo(myQt, 'shared_date', targets.quotation)
+    return computeBackendTatInfo(myQt, 'shared_date', targets.quotation, true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myQt, backendAssignedMap, currentUser, relevantModules, targets.quotation])
+  }, [myQt, backendAssignedMap, qrByEnquiryMap, currentUser, relevantModules, targets.quotation])
 
   const qtStats = { ...computeAssigneeStats(myQt, 'Sent', ['Revision'], null, null), ...qtTatInfo }
   const qrTatInfo = useMemo(() => computeBackendTatInfo(myQr, 'sent_date', targets.questionnaire),
@@ -389,7 +407,7 @@ export default function ReportCard() {
     const rows = []
     if (relevantModules.includes('Flowchart')) myFc.forEach(t => rows.push({ module: 'Flowchart', enquiryId: t.enquiry_id, version: t.version, status: t.status, date: t.assigned_date }))
     if (relevantModules.includes('Quotation')) myQt.forEach(t => rows.push({ module: 'Quotation', enquiryId: t.enquiry_id, version: t.version, status: t.status, date: t.shared_date }))
-    if (relevantModules.includes('Questionnaire')) myQr.forEach(t => rows.push({ module: 'Questionnaire', enquiryId: t.enquiry_id, version: qrVersionMap[t.id], status: t.status, date: t.received_date || t.created_at }))
+    if (relevantModules.includes('Questionnaire')) myQr.forEach(t => rows.push({ module: 'Questionnaire', enquiryId: t.enquiry_id, version: qrVersionMap[t.id], status: t.status, date: t.received_date || t.sent_date }))
     if (relevantModules.includes('GA Drawing')) myGa.forEach(t => rows.push({ module: 'GA Drawing', enquiryId: t.enquiry_id, version: t.version, status: t.status, date: isReviewerRole ? (t.admin_review_date || t.assigned_date) : t.assigned_date }))
     if (relevantModules.includes('Work Order')) myWo.forEach(t => rows.push({ module: 'Work Order', enquiryId: t.enquiry_id, version: t.version, status: t.status, date: isReviewerRole ? (t.admin_review_date || t.assigned_date) : t.assigned_date }))
     return rows.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
@@ -412,7 +430,7 @@ export default function ReportCard() {
   function moduleRowDate(moduleName, row) {
     if (moduleName === 'Flowchart') return row.assigned_date
     if (moduleName === 'Quotation') return row.shared_date
-    if (moduleName === 'Questionnaire') return row.received_date || row.created_at
+    if (moduleName === 'Questionnaire') return row.received_date || row.sent_date
     if (moduleName === 'GA Drawing') return isReviewerRole ? (row.admin_review_date || row.assigned_date) : row.assigned_date
     if (moduleName === 'Work Order') return isReviewerRole ? (row.admin_review_date || row.assigned_date) : row.assigned_date
     return row.assigned_date || row.created_at

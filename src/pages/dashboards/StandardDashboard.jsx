@@ -143,22 +143,10 @@ export default function StandardDashboard({ user }) {
   const workQueueItems = useMemo(() => {
     const items = []
 
-    // Questionnaire follow-up is due the same day it's sent — no next_followup_date check needed.
-    latestPerEnquiry(qrTasks)
-      .filter(t => t.status === 'Sent' && enqMap[t.enquiry_id]?.status === 'Active')
-      .forEach(t => {
-        items.push({
-          type: 'questionnaire',
-          icon: '📋',
-          label: 'Questionnaire',
-          color: '#b45309',
-          severity: 'due-today',
-          enquiryId: t.enquiry_id,
-          company: enqMap[t.enquiry_id]?.company_name,
-          message: 'Questionnaire sent — take follow-up & collect response',
-          date: t.created_at,
-        })
-      })
+    // NOTE: Questionnaire "sent — awaiting response" is intentionally NOT
+    // shown here anymore — that's Backend's own responsibility now (see
+    // BackendDashboard.jsx's Today's Work Queue). Admin/Followup no longer
+    // see it as an actionable item here.
 
     // Flowchart — only "Shared with Client" (awaiting client decision). Due date
     // uses the enquiry's own Next Follow-up Date (matches original Apps Script logic),
@@ -498,8 +486,29 @@ export default function StandardDashboard({ user }) {
           {workQueueItems.length > 10 && (
             <div className="sd-pagination">
               <span>{workQueuePage * 10 + 1}–{Math.min(workQueuePage * 10 + 10, workQueueItems.length)} of {workQueueItems.length}</span>
-              <div style={{ display: 'flex', gap: 6 }}>
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
                 <button className="quick-btn" disabled={workQueuePage === 0} onClick={() => setWorkQueuePage(p => p - 1)}>← Prev</button>
+                <input
+                  type="number"
+                  min={1}
+                  max={Math.ceil(workQueueItems.length / 10)}
+                  value={workQueuePage + 1}
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => {
+                    const totalPages = Math.ceil(workQueueItems.length / 10)
+                    let n = parseInt(e.target.value, 10)
+                    if (isNaN(n)) return
+                    if (n < 1) n = 1
+                    if (n > totalPages) n = totalPages
+                    setWorkQueuePage(n - 1)
+                  }}
+                  style={{
+                    width: 48, textAlign: 'center', padding: '6px 4px',
+                    borderRadius: 8, border: '1px solid var(--border)',
+                    fontFamily: 'var(--mono)', fontSize: 12.5,
+                  }}
+                />
+                <span style={{ fontSize: 12, color: 'var(--muted)' }}>/ {Math.ceil(workQueueItems.length / 10)}</span>
                 <button className="quick-btn" disabled={(workQueuePage + 1) * 10 >= workQueueItems.length} onClick={() => setWorkQueuePage(p => p + 1)}>Next →</button>
               </div>
             </div>

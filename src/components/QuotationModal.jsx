@@ -5,7 +5,7 @@ import { sanitizeFileName } from '../lib/fileHelpers'
 import { addBusinessDaysExcludingSunday, formatDateISO } from '../lib/dateHelpers'
 import Modal from './Modal'
 
-export default function QuotationModal({ enquiry, existingQuotationsCount, onClose, onSaved }) {
+export default function QuotationModal({ enquiry, existingQuotationsCount, flowchartTasks, onClose, onSaved }) {
   const { user } = useAuth()
 
   const [action, setAction] = useState(existingQuotationsCount > 0 ? 'revise' : 'add')
@@ -13,6 +13,14 @@ export default function QuotationModal({ enquiry, existingQuotationsCount, onClo
   const [notes, setNotes] = useState('')
   const [files, setFiles] = useState([])
   const [saving, setSaving] = useState(false)
+
+  // Guard: agar is enquiry mein Flowchart step shuru hua tha (kam se kam 1 task
+  // exist karta hai), to jab tak koi bhi version 'Client Approved' na ho,
+  // Quotation bhejna block rahega. Agar Flowchart kabhi shuru hi nahi hua
+  // (enquiry seedha Quotation path se aaya), to koi restriction nahi.
+  const hasFlowchartStarted = (flowchartTasks || []).length > 0
+  const flowchartApproved = (flowchartTasks || []).some(t => t.status === 'Client Approved')
+  const blockedByFlowchart = hasFlowchartStarted && !flowchartApproved
 
   function handleFileSelect(e) {
     const newFiles = Array.from(e.target.files)
@@ -25,6 +33,11 @@ export default function QuotationModal({ enquiry, existingQuotationsCount, onClo
   }
 
   async function handleSave() {
+    if (blockedByFlowchart) {
+      alert('Flowchart abhi tak Client se confirm/approve nahi hua hai. Quotation bhejne se pehle Flowchart Approve hona zaroori hai.')
+      return
+    }
+
     if (files.length === 0) {
       alert('Please upload at least one quotation file')
       return
@@ -119,12 +132,21 @@ export default function QuotationModal({ enquiry, existingQuotationsCount, onClo
       footer={
         <>
           <button className="btn-modal-ghost" onClick={onClose}>Cancel</button>
-          <button className="btn-modal-primary" onClick={handleSave} disabled={saving}>
+          <button className="btn-modal-primary" onClick={handleSave} disabled={saving || blockedByFlowchart}>
             <i className="fas fa-paper-plane"></i> {saving ? 'Submitting…' : 'Submit'}
           </button>
         </>
       }
     >
+      {blockedByFlowchart && (
+        <div className="modal-form-group" style={{
+          background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: 8,
+          padding: '10px 14px', color: '#b91c1c', fontSize: 13, fontWeight: 600
+        }}>
+          ⚠️ Flowchart abhi tak Client se Approve nahi hua hai. Quotation bhejने ke liye pehle Flowchart Approve hona zaroori hai.
+        </div>
+      )}
+
       <div className="modal-form-group">
         <label>Upload Quotation File(s) *</label>
         <label className="modal-file-btn">
