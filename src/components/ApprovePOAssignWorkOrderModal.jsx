@@ -11,7 +11,6 @@ export default function ApprovePOAssignWorkOrderModal({ enquiry, latestPO, exist
 
   const [designer, setDesigner] = useState('')
   const [instructions, setInstructions] = useState('')
-  const [remarks, setRemarks] = useState('')
   const [files, setFiles] = useState([])
   const [saving, setSaving] = useState(false)
 
@@ -33,38 +32,7 @@ export default function ApprovePOAssignWorkOrderModal({ enquiry, latestPO, exist
 
     setSaving(true)
     try {
-      // 1. PO ko approve mark karo
-      const { error: poUpdateError } = await supabase
-        .from('purchase_orders')
-        .update({
-          status: 'Approved',
-          admin_review_notes: remarks.trim(),
-          reviewed_by: user?.name || '',
-          reviewed_date: new Date().toISOString()
-        })
-        .eq('id', latestPO.id)
-
-      if (poUpdateError) throw poUpdateError
-
-      await supabase.from('stage_logs').insert({
-        log_id: `LOG-${Date.now()}`,
-        enquiry_id: enquiry.enquiry_id,
-        stage_name: 'PO Approved by Admin',
-        remarks: remarks.trim() || `PO ${latestPO.version} approved`,
-        logged_by: user?.name || ''
-      })
-
-      if (latestPO.submitted_by) {
-        await supabase.from('notifications').insert({
-          recipient_name: latestPO.submitted_by,
-          enquiry_id: enquiry.enquiry_id,
-          title: '✅ PO Approved',
-          message: `PO ${latestPO.version} for enquiry ${enquiry.enquiry_id} (${enquiry.company_name}) has been approved by ${user?.name}.`,
-          type: 'po_approved'
-        })
-      }
-
-      // 2. Reference files upload karo (agar diye hain)
+      // 1. Reference files upload karo (agar diye hain)
       let fileUrls = []
       for (const file of files) {
         const filePath = `work-orders/${enquiry.enquiry_id}/${Date.now()}_${sanitizeFileName(file.name)}`
@@ -77,7 +45,7 @@ export default function ApprovePOAssignWorkOrderModal({ enquiry, latestPO, exist
         }
       }
 
-      // 3. Work Order banao aur designer ko assign karo
+      // 2. Work Order banao aur designer ko assign karo
       const version = `V${(existingWOCount || 0) + 1}`
       const taskId = `WO-${Date.now()}`
 
@@ -113,7 +81,7 @@ export default function ApprovePOAssignWorkOrderModal({ enquiry, latestPO, exist
       onSaved()
       onClose()
     } catch (err) {
-      alert('Error approving PO / assigning work order: ' + err.message)
+      alert('Error assigning work order: ' + err.message)
     } finally {
       setSaving(false)
     }
@@ -121,14 +89,14 @@ export default function ApprovePOAssignWorkOrderModal({ enquiry, latestPO, exist
 
   return (
     <Modal
-      title="🏆 Approve Purchase Order"
+      title="📋 Assign Work Order to Designer"
       onClose={onClose}
       width="600px"
       footer={
         <>
           <button className="btn-modal-ghost" onClick={onClose}>Cancel</button>
           <button className="btn-modal-primary" onClick={handleSubmit} disabled={saving}>
-            <i className="fas fa-check"></i> {saving ? 'Processing…' : 'Approve & Assign Work Order'}
+            <i className="fas fa-check"></i> {saving ? 'Processing…' : 'Assign Work Order'}
           </button>
         </>
       }
@@ -169,15 +137,6 @@ export default function ApprovePOAssignWorkOrderModal({ enquiry, latestPO, exist
             ))}
           </div>
         )}
-      </div>
-
-      <div className="modal-form-group">
-        <label>Approval Remarks (optional)</label>
-        <textarea
-          value={remarks}
-          onChange={e => setRemarks(e.target.value)}
-          placeholder="Any remarks…"
-        />
       </div>
     </Modal>
   )

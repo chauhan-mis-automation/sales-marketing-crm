@@ -12,7 +12,7 @@ import './BackendDashboard.css'
 
 // current_stage values that mean "backend needs to do something right now"
 const ACTION_STAGES = {
-  'Assigned': { label: 'Create Flowchart', detail: 'New enquiry assigned', icon: '🗂', color: '#6d28d9' },
+  'Assigned': { label: 'Newly Assigned', detail: 'New enquiry assigned', icon: '🆕', color: '#6d28d9' },
   'Client Want Flowchart Revision': { label: 'Revise Flowchart', detail: 'Client requested changes — resend revised Flowchart', icon: '🔄', color: '#be123c' },
   'Received Confirmation on Flow Chart': { label: 'Send Quotation', detail: 'Flowchart approved by client — send Quotation', icon: '💰', color: '#0369a1' },
   'Client Want Quotation Revision': { label: 'Revise Quotation', detail: 'Client requested changes — resend revised Quotation', icon: '🔄', color: '#be123c' },

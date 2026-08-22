@@ -21,10 +21,50 @@ export default function PurchaseOrderReviewModal({ enquiry, latestPO, isAuthoriz
       return
     }
 
-    // Approve hone par ye modal band karke seedha "Assign Work Order" wala modal khulta hai
+    // Approve hone par PO ko turant Approved mark karte hain (kya Work Order
+    // abhi assign karna hai ya baad mein, ye alag confirmation se decide hoga —
+    // EnquiryDetail.jsx mein onApprove callback ke through).
     if (action === 'approve') {
-      onClose()
-      onApprove()
+      setSaving(true)
+      try {
+        const { error: approveError } = await supabase
+          .from('purchase_orders')
+          .update({
+            status: 'Approved',
+            admin_review_notes: remarks.trim(),
+            reviewed_by: user?.name || '',
+            reviewed_date: new Date().toISOString()
+          })
+          .eq('id', latestPO.id)
+
+        if (approveError) throw approveError
+
+        await supabase.from('stage_logs').insert({
+          log_id: `LOG-${Date.now()}`,
+          enquiry_id: enquiry.enquiry_id,
+          stage_name: 'PO Approved by Admin',
+          remarks: remarks.trim() || `PO ${latestPO.version} approved`,
+          logged_by: user?.name || ''
+        })
+
+        if (latestPO.submitted_by) {
+          await supabase.from('notifications').insert({
+            recipient_name: latestPO.submitted_by,
+            enquiry_id: enquiry.enquiry_id,
+            title: '✅ PO Approved',
+            message: `PO ${latestPO.version} for enquiry ${enquiry.enquiry_id} (${enquiry.company_name}) has been approved by ${user?.name}.`,
+            type: 'po_approved'
+          })
+        }
+
+        await onSaved()
+        onClose()
+        onApprove()
+      } catch (err) {
+        alert('Error approving PO: ' + err.message)
+      } finally {
+        setSaving(false)
+      }
       return
     }
 

@@ -17,6 +17,7 @@ import CloseEnquiryModal from '../components/CloseEnquiryModal'
 import PurchaseOrderModal from '../components/PurchaseOrderModal'
 import PurchaseOrderReviewModal from '../components/PurchaseOrderReviewModal'
 import ApprovePOAssignWorkOrderModal from '../components/ApprovePOAssignWorkOrderModal'
+import ConfirmModal from '../components/ConfirmModal'
 import WorkOrderModal from '../components/WorkOrderModal'
 import WorkOrderAdminReviewModal from '../components/WorkOrderAdminReviewModal'
 import AssignTeamModal from '../components/AssignTeamModal'
@@ -163,6 +164,7 @@ export default function EnquiryDetail() {
   const [showPOReviewModal, setShowPOReviewModal] = useState(false)
   const [poReviewMode, setPoReviewMode] = useState('admin')
   const [showApprovePOModal, setShowApprovePOModal] = useState(false)
+  const [showAssignWOConfirm, setShowAssignWOConfirm] = useState(false)
   const [poIsRevision, setPoIsRevision] = useState(false)
   const [showWOModal, setShowWOModal] = useState(false)
   const [showWOAdminReviewModal, setShowWOAdminReviewModal] = useState(false)
@@ -451,6 +453,17 @@ export default function EnquiryDetail() {
               return (isReassignedReviewer || isAdminPending) ? 'Review PO' : 'Upload PO'
             })()}
           </button>
+          {(() => {
+            const role = (user?.role || '').toLowerCase().trim()
+            const latestPO = purchaseOrders[0]
+            const canAssignWO = (role === 'admin' || role === 'superadmin') && latestPO?.status === 'Approved'
+            if (!canAssignWO) return null
+            return (
+              <button className="btn-action" onClick={() => setShowApprovePOModal(true)}>
+                <i className="fas fa-drafting-compass"></i> Assign Work Order
+              </button>
+            )
+          })()}
         </div>
       </div>
 
@@ -1305,7 +1318,18 @@ export default function EnquiryDetail() {
           isAuthorizedReview={poReviewMode === 'authorized'}
           onClose={() => setShowPOReviewModal(false)}
           onSaved={loadDetail}
-          onApprove={() => setShowApprovePOModal(true)}
+          onApprove={() => setShowAssignWOConfirm(true)}
+        />
+      )}
+
+      {showAssignWOConfirm && (
+        <ConfirmModal
+          title="✅ PO Approved"
+          message="Purchase Order approve ho gaya hai. Kya aap abhi is Enquiry ke liye Designer ko Work Order assign karna chahte hain?"
+          confirmLabel="Haan, Assign Karo"
+          cancelLabel="Baad Mein"
+          onConfirm={() => { setShowAssignWOConfirm(false); setShowApprovePOModal(true) }}
+          onCancel={() => setShowAssignWOConfirm(false)}
         />
       )}
 
