@@ -182,11 +182,13 @@
 }
 
 .kpr-metric-value {
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 800;
   color: #1a1f17;
   font-family: 'DM Mono', monospace;
   margin-bottom: 12px;
+  word-break: break-word;
+  line-height: 1.25;
 }
 
 .kpr-metric-bar {

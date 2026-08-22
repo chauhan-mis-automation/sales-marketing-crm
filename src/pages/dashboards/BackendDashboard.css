@@ -128,9 +128,15 @@
 /* ── My TAT Performance ─────────────────────────────────── */
 .bd-tat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, minmax(280px, 1fr));
   gap: 14px;
   padding: 16px;
+}
+
+@media (max-width: 960px) {
+  .bd-tat-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
 }
 
 .bd-tat-card {

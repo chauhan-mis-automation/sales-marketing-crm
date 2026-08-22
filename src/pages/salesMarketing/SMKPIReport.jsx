@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 import { useSMAuth } from '../../context/SMAuthContext'
-import { getKPIData, KPI_METRICS, formatKPIValue, calcFinalScore, calcMetricPct } from '../../lib/kpiCalc'
+import { getKPIData, KPI_METRICS, formatKPIValue, calcFinalScore, calcMetricPct, getMaxScore, calcScoreObtained } from '../../lib/kpiCalc'
 import SetTargetModal from '../../components/SetTargetModal'
 import ViewTargetsModal from '../../components/ViewTargetsModal'
 import './SMKPIReport.css'
@@ -117,6 +117,8 @@ export default function SMKPIReport() {
           const achieved = kpi ? kpi[m.key] : 0
           const target = targets?.[m.targetKey] || 0
           const pct = calcMetricPct(achieved, target)
+          const maxScore = getMaxScore(targets, m.targetKey)
+          const scoreObtained = loaded ? calcScoreObtained(achieved, target, maxScore) : 0
           return (
             <div className="kpr-metric-card" key={m.key}>
               <div className="kpr-metric-top">
@@ -128,6 +130,13 @@ export default function SMKPIReport() {
               <div className="kpr-metric-bottom">
                 <span>Target: {target || 0}</span>
                 <span>Achieved</span>
+              </div>
+              <div style={{
+                display: 'flex', justifyContent: 'space-between', marginTop: 8,
+                paddingTop: 8, borderTop: '1px dashed var(--border)', fontSize: 11.5,
+              }}>
+                <span style={{ color: 'var(--muted)' }}>Max Score: <strong style={{ color: 'var(--text)' }}>{maxScore}</strong></span>
+                <span style={{ color: 'var(--muted)' }}>Score Obtained: <strong style={{ color: 'var(--green, #2d7a47)' }}>{scoreObtained}</strong></span>
               </div>
             </div>
           )

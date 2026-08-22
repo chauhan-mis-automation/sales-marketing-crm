@@ -496,7 +496,7 @@ table.rc-table tbody td {
   background: var(--surface);
   border-radius: 16px;
   width: 100%;
-  max-width: 700px;
+  max-width: 920px;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
@@ -537,5 +537,19 @@ table.rc-table tbody td {
 }
 
 .rc-modal-body {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: auto;
+}
+
+.rc-modal-body table {
+  min-width: 680px;
+}
+
+.rc-modal-body thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
 }

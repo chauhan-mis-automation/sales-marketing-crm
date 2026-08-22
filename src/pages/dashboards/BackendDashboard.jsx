@@ -12,7 +12,7 @@ import './BackendDashboard.css'
 
 // current_stage values that mean "backend needs to do something right now"
 const ACTION_STAGES = {
-  'Assigned': { label: 'Create Flowchart', detail: 'New enquiry assigned — create and share Flowchart', icon: '🗂', color: '#6d28d9' },
+  'Assigned': { label: 'Create Flowchart', detail: 'New enquiry assigned', icon: '🗂', color: '#6d28d9' },
   'Client Want Flowchart Revision': { label: 'Revise Flowchart', detail: 'Client requested changes — resend revised Flowchart', icon: '🔄', color: '#be123c' },
   'Received Confirmation on Flow Chart': { label: 'Send Quotation', detail: 'Flowchart approved by client — send Quotation', icon: '💰', color: '#0369a1' },
   'Client Want Quotation Revision': { label: 'Revise Quotation', detail: 'Client requested changes — resend revised Quotation', icon: '🔄', color: '#be123c' },
@@ -160,6 +160,7 @@ export default function BackendDashboard({ user }) {
   const [qrTasks, setQrTasks] = useState([])
   const [stageLogs, setStageLogs] = useState([])
   const [targets, setTargets] = useState(DEFAULT_TAT_TARGETS)
+  const [workQueuePage, setWorkQueuePage] = useState(0)
 
   useEffect(() => {
     loadData()
@@ -286,6 +287,11 @@ export default function BackendDashboard({ user }) {
       .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
   }, [actionNeeded, questionnaireItems, gaShareItems])
 
+  useEffect(() => {
+    const totalPages = Math.max(1, Math.ceil(combinedWorkQueue.length / 10))
+    if (workQueuePage > totalPages - 1) setWorkQueuePage(totalPages - 1)
+  }, [combinedWorkQueue, workQueuePage])
+
   // ── My TAT Performance ──────────────────────────────────
   // This measures BACKEND's own turnaround: from the moment the enquiry
   // was assigned to Backend, until Backend hands off their piece of work —
@@ -356,7 +362,6 @@ export default function BackendDashboard({ user }) {
   }
 
   const fcTatRecords = useMemo(() => buildBackendTatRecords(myFc, 'client_shared_date', true), [myFc, backendAssignedMap, qrByEnquiryMap, enqMap])
-  const gaTatRecords = useMemo(() => buildBackendTatRecords(myGa, 'assigned_date'), [myGa, backendAssignedMap, enqMap])
   const qrTatRecords = useMemo(() => buildBackendTatRecords(myQr, 'sent_date'), [myQr, backendAssignedMap, enqMap])
   const qtTatRecords = useMemo(() => buildBackendTatRecords(myQt, 'shared_date', true), [myQt, backendAssignedMap, qrByEnquiryMap, enqMap])
 
@@ -474,7 +479,7 @@ export default function BackendDashboard({ user }) {
               <tr><th>Action</th><th>Enquiry ID</th><th>Company</th><th>Detail</th><th>Date</th><th></th></tr>
             </thead>
             <tbody>
-              {combinedWorkQueue.map((item, i) => (
+              {combinedWorkQueue.slice(workQueuePage * 10, workQueuePage * 10 + 10).map((item, i) => (
                 <tr
                   key={`${item.enquiryId}-${i}`}
                   className={item.isOverdue ? 'wq-row-overdue' : ''}
@@ -499,6 +504,36 @@ export default function BackendDashboard({ user }) {
             </tbody>
           </table>
         </div>
+        {combinedWorkQueue.length > 10 && (
+          <div className="sd-pagination">
+            <span>{workQueuePage * 10 + 1}–{Math.min(workQueuePage * 10 + 10, combinedWorkQueue.length)} of {combinedWorkQueue.length}</span>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <button className="quick-btn" disabled={workQueuePage === 0} onClick={() => setWorkQueuePage(p => p - 1)}>← Prev</button>
+              <input
+                type="number"
+                min={1}
+                max={Math.ceil(combinedWorkQueue.length / 10)}
+                value={workQueuePage + 1}
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => {
+                  const totalPages = Math.ceil(combinedWorkQueue.length / 10)
+                  let n = parseInt(e.target.value, 10)
+                  if (isNaN(n)) return
+                  if (n < 1) n = 1
+                  if (n > totalPages) n = totalPages
+                  setWorkQueuePage(n - 1)
+                }}
+                style={{
+                  width: 48, textAlign: 'center', padding: '6px 4px',
+                  borderRadius: 8, border: '1px solid var(--border)',
+                  fontFamily: 'var(--mono)', fontSize: 12.5,
+                }}
+              />
+              <span style={{ fontSize: 12, color: 'var(--muted)' }}>/ {Math.ceil(combinedWorkQueue.length / 10)}</span>
+              <button className="quick-btn" disabled={(workQueuePage + 1) * 10 >= combinedWorkQueue.length} onClick={() => setWorkQueuePage(p => p + 1)}>Next →</button>
+            </div>
+          </div>
+        )}
       </WorkQueueCard>
 
       {/* ── My TAT Performance ─────────────────────────────── */}
@@ -510,7 +545,6 @@ export default function BackendDashboard({ user }) {
         <div className="bd-tat-grid">
           <TatCard icon="📁" name="Flowchart" color="#6d28d9" target={targets.flowchart} records={fcTatRecords} enqMap={enqMap} navigate={navigate} />
           <TatCard icon="🔄" name="Revise Flowchart" color="#be123c" target={targets.reviseFlowchart} records={reviseFcTatRecords} enqMap={enqMap} navigate={navigate} />
-          <TatCard icon="📐" name="GA Drawing" color="#0d9488" target={targets.gaDrawing} records={gaTatRecords} enqMap={enqMap} navigate={navigate} />
           <TatCard icon="📤" name="Share GA Drawing" color="#0891b2" target={targets.gaDrawingSend} records={gaShareTatRecords} enqMap={enqMap} navigate={navigate} />
           <TatCard icon="💰" name="Quotation" color="#0369a1" target={targets.quotation} records={qtTatRecords} enqMap={enqMap} navigate={navigate} />
           <TatCard icon="📄" name="Questionnaire" color="#b45309" target={targets.questionnaire} records={qrTatRecords} enqMap={enqMap} navigate={navigate} />

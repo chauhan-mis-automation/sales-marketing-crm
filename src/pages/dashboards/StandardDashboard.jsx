@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { supabase } from '../../lib/supabaseClient'
 import { useDropdownData } from '../../lib/useDropdownData'
@@ -39,6 +39,7 @@ function computeRange(key) {
 
 export default function StandardDashboard({ user }) {
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { stages } = useDropdownData()
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin'
 
@@ -57,13 +58,34 @@ export default function StandardDashboard({ user }) {
 
   const [statModal, setStatModal] = useState(null)
   const [recentPage, setRecentPage] = useState(0)
-  const [workQueuePage, setWorkQueuePage] = useState(0)
+
+  // Today's Work Queue ka page number ab URL mein (?wqpage=N) rakhte hain, na ki
+  // sessionStorage mein — kyunki jab Back button (browser history) dabate ho,
+  // URL apne aap wahi purana wala restore ho jata hai (page number sameत). Ye
+  // sessionStorage-wale approach se zyada reliable hai kyunki isme koi
+  // component-mount-timing wali race-condition nahi hoti.
+  const workQueuePage = Math.max(0, (parseInt(searchParams.get('wqpage'), 10) || 1) - 1)
+
+  function setWorkQueuePage(updater) {
+    setSearchParams(prev => {
+      const current = Math.max(0, (parseInt(prev.get('wqpage'), 10) || 1) - 1)
+      const next = typeof updater === 'function' ? updater(current) : updater
+      const params = new URLSearchParams(prev)
+      params.set('wqpage', String(next + 1))
+      return params
+    }, { replace: true })
+  }
 
   useEffect(() => {
     loadData()
   }, [])
 
+  const isFirstFilterRun = useRef(true)
   useEffect(() => {
+    if (isFirstFilterRun.current) {
+      isFirstFilterRun.current = false
+      return
+    }
     setRecentPage(0)
     setWorkQueuePage(0)
   }, [fromDate, toDate])
@@ -282,6 +304,17 @@ export default function StandardDashboard({ user }) {
       return new Date(b.date || 0) - new Date(a.date || 0)
     })
   }, [overdueEnquiries, fcTasks, gaTasks, qtTasks, poTasks, woTasks, qrTasks, enqMap, isAdmin, today])
+
+  // Agar list chhoti ho jaye (kuch items complete ho gaye ho) to URL wala page
+  // number invalid ho sakta hai — usko valid range mein wapas le aate hain.
+  // IMPORTANT: jab tak data load ho raha hai (loading=true), workQueueItems
+  // temporarily khali hota hai — us waqt clamp mat karo, warna URL wala page
+  // galti se 0 pe reset ho jayega.
+  useEffect(() => {
+    if (loading) return
+    const totalPages = Math.max(1, Math.ceil(workQueueItems.length / 10))
+    if (workQueuePage > totalPages - 1) setWorkQueuePage(totalPages - 1)
+  }, [workQueueItems, workQueuePage, loading])
 
   // Work Queue summary counts (matches original Apps Script's 6-card breakdown)
   const wqTotalCount = workQueueItems.length

@@ -123,6 +123,23 @@ export default function EnquiryDetail() {
     () => buildVersionLabels(enquiry?.enquiry_id, flowchartTasks, quotations, gaDrawingTasks),
     [enquiry?.enquiry_id, flowchartTasks, quotations, gaDrawingTasks]
   )
+
+  // Har call ke time enquiry kis stage mein thi — stage_logs se derive karte hain
+  // (call ke time se pehle/us waqt ka sabse latest stage_log entry).
+  const callHistoryWithStage = useMemo(() => {
+    const logsAsc = [...stageLogs].sort((a, b) => new Date(a.date_entered) - new Date(b.date_entered))
+    return callHistory.map(call => {
+      let stageAtCall = null
+      for (const log of logsAsc) {
+        if (new Date(log.date_entered) <= new Date(call.date)) {
+          stageAtCall = log.stage_name
+        } else {
+          break
+        }
+      }
+      return { ...call, stageAtCall }
+    })
+  }, [callHistory, stageLogs])
   const [questionnaires, setQuestionnaires] = useState([])
   const [purchaseOrders, setPurchaseOrders] = useState([])
   const [workOrders, setWorkOrders] = useState([])
@@ -527,7 +544,7 @@ export default function EnquiryDetail() {
             {callHistory.length > 0 && (
               <>
                 <div className="ed-callhist-list">
-                  {callHistory.slice(callHistoryPage * 4, callHistoryPage * 4 + 4).map((call, idx) => (
+                  {callHistoryWithStage.slice(callHistoryPage * 4, callHistoryPage * 4 + 4).map((call, idx) => (
                     <div key={call.id} className="ed-callhist-item" style={{ animationDelay: `${idx * 60}ms` }}>
                       <div className={`ed-callhist-icon ${call.call_type === 'Incoming' ? 'incoming' : 'outgoing'}`}>
                         <i className={`fas ${call.call_type === 'Incoming' ? 'fa-phone-volume' : 'fa-phone'}`}></i>
@@ -537,6 +554,9 @@ export default function EnquiryDetail() {
                           <span className={`badge ${call.call_type === 'Incoming' ? 'b-sky' : 'b-teal'}`}>
                             {call.call_type}
                           </span>
+                          {call.stageAtCall && (
+                            <span className="badge b-purple">{call.stageAtCall}</span>
+                          )}
                           <span className="ed-callhist-by"><i className="fas fa-user"></i> {call.logged_by}</span>
                         </div>
                         <div className="ed-callhist-notes">{call.notes}</div>

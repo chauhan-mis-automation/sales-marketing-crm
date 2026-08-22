@@ -146,13 +146,11 @@ export default function SMMarketingKPIReport() {
               <div className="mkr-kra-bottom">
                 <span>Target: {target}{kra.unit === 'pct' ? '%' : ''}</span>
                 <span className="mkr-kra-timeline-badge" style={{ background: `${timelineColor}18`, color: timelineColor }}>{kra.timeline}</span>
-                <span className="mkr-kra-score" style={{ color: barColor }}>{score.toFixed(1)} <small>/ {weight} pts</small></span>
               </div>
 
-              <div className="mkr-kra-weightage">
-                <span>WEIGHTAGE</span>
-                <div className="mkr-kra-weightage-bar"><div style={{ width: `${weight}%` }}></div></div>
-                <span className="mkr-kra-weightage-pct">{weight}%</span>
+              <div className="mkr-kra-score-row">
+                <span>Weightage: <strong>{weight}</strong> <small style={{ color: '#8a9080', fontWeight: 400 }}>({weight}% of 100)</small></span>
+                <span>Score Obtained: <strong style={{ color: barColor }}>{score.toFixed(1)}</strong></span>
               </div>
             </div>
           )

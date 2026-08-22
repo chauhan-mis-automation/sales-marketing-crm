@@ -109,26 +109,57 @@ export const KPI_METRICS = [
   { key: 'reporting', targetKey: 'reporting', label: 'Reporting', unit: 'count' },
 ]
 
+// Client ki original Google Sheet ke "Max. Score" column se liye gaye default
+// weights (sum = 100). Jab tak kisi sales-person/month ke liye specifically
+// Max Score set na kiya ho, ye defaults use honge — isse naye sales-person ya
+// naye month ke liye bhi Final Score turant sahi calculate hota hai.
+export const DEFAULT_MAX_SCORES = {
+  sales_dhu: 15, sales_ahu: 10, yoy_growth: 0, team_sales: 0, new_cust_sales_pct: 0,
+  overhead_pct: 5, enq_new_ind: 0, enq_dhu: 20, enq_ahu: 10, fup_phys: 12,
+  fup_tele: 7, first_phys: 12, first_tele: 7, reporting: 2,
+}
+
 export function formatKPIValue(value, unit) {
   if (unit === 'currency') {
-    if (value >= 10000000) return `Rs ${(value / 10000000).toFixed(1)}Cr`
-    if (value >= 100000) return `Rs ${(value / 100000).toFixed(1)}L`
-    if (value >= 1000) return `Rs ${(value / 1000).toFixed(1)}K`
-    return `Rs ${Math.round(value)}`
+    // Exact amount, Indian comma-grouping (jaise 1,44,70,000) — koi
+    // Cr/L/K abbreviation nahi, poora number dikhega.
+    return `Rs ${Math.round(value).toLocaleString('en-IN')}`
   }
   if (unit === 'pct') return `${value}%`
   return `${value}`
 }
 
+// Ek KPI ka Max Score nikalta hai — pehle targets row mein dekhta hai
+// (`<key>_max`), agar wahan set nahi hai to DEFAULT_MAX_SCORES se fallback
+// karta hai.
+export function getMaxScore(targets, targetKey) {
+  const stored = targets?.[`${targetKey}_max`]
+  if (stored !== undefined && stored !== null && stored !== '') return parseFloat(stored)
+  return DEFAULT_MAX_SCORES[targetKey] ?? 0
+}
+
+// Score Obtained = raw Achieved-ratio (bina round kiye) × Max Score — client
+// ki sheet ke `D4*E4` formula ke exactly barabar. IMPORTANT: ye calcMetricPct
+// (jo card pe dikhne wala ROUNDED % nikalta hai) use NAHI karta — agar rounded
+// % use karte to double-rounding ho jati (jaise sheet mein 28.94% × 15 = 4.3,
+// lekin rounded 29% × 15 = 4.4 — chhota farak aa jata). Isliye raw ratio se
+// seedha calculate karte hain, aur sirf FINAL Score Obtained ko round karte hain.
+export function calcScoreObtained(achieved, target, maxScore) {
+  const t = parseFloat(target) || 0
+  const a = parseFloat(achieved) || 0
+  const rawRatio = t > 0 ? Math.min(1, a / t) : 0
+  return Math.round(rawRatio * maxScore * 10) / 10 // 1 decimal, jaise sheet mein
+}
+
 export function calcFinalScore(kpi, targets) {
-  let totalPct = 0
+  let total = 0
   KPI_METRICS.forEach(m => {
     const target = parseFloat(targets?.[m.targetKey]) || 0
     const achieved = parseFloat(kpi[m.key]) || 0
-    const pct = target > 0 ? Math.min(100, Math.round((achieved / target) * 100)) : 0
-    totalPct += pct
+    const maxScore = getMaxScore(targets, m.targetKey)
+    total += calcScoreObtained(achieved, target, maxScore)
   })
-  return Math.round(totalPct / KPI_METRICS.length)
+  return Math.round(total * 10) / 10
 }
 
 export function calcMetricPct(achieved, target) {

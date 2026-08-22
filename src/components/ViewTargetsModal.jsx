@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabaseClient'
-import { KPI_METRICS } from '../lib/kpiCalc'
+import { KPI_METRICS, getMaxScore } from '../lib/kpiCalc'
 import Modal from './Modal'
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -55,7 +55,12 @@ export default function ViewTargetsModal({ onClose }) {
               <tr key={t.id}>
                 <td><strong>{t.sales_person_name}</strong></td>
                 <td className="scp-mono">{MONTH_NAMES[t.month]} {t.year}</td>
-                {KPI_METRICS.map(m => <td key={m.targetKey} className="scp-mono">{t[m.targetKey]}</td>)}
+                {KPI_METRICS.map(m => (
+                  <td key={m.targetKey} className="scp-mono">
+                    {t[m.targetKey]}
+                    <span style={{ color: 'var(--muted)', fontSize: 10.5 }}> (max: {getMaxScore(t, m.targetKey)})</span>
+                  </td>
+                ))}
                 <td>
                   <button className="scp-view-btn" onClick={() => handleDelete(t.id)} title="Delete">
                     <i className="fas fa-trash"></i>
